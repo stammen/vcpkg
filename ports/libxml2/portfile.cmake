@@ -19,7 +19,14 @@ find_program(NMAKE nmake)
 
 message(STATUS "NMAKE ${NMAKE}")
 
-
+if (VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
+    set(UWP_PLATFORM  "arm")
+elseif (VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
+    set(UWP_PLATFORM  "x64")
+elseif (VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+    set(UWP_PLATFORM  "Win32")
+endif()
+	
 vcpkg_apply_patches(
     SOURCE_PATH ${SOURCE_PATH}/
     PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-Fix-makefile.patch
@@ -72,25 +79,33 @@ vcpkg_execute_required_process(
     WORKING_DIRECTORY ${SCRIPTS_DIR}
     LOGNAME config-${TARGET_TRIPLET}-rel
 )
+
+file(COPY
+${CMAKE_CURRENT_LIST_DIR}/setVSvars.bat
+DESTINATION ${SCRIPTS_DIR})
+
+file(COPY
+${CMAKE_CURRENT_LIST_DIR}/make-libxml2.bat
+DESTINATION ${SCRIPTS_DIR})
+
+
+
 # Handle build output directory
 file(TO_NATIVE_PATH "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel" OUTDIR)
 file(MAKE_DIRECTORY "${OUTDIR}")
 message(STATUS "Configuring ${TARGET_TRIPLET}-rel done")
 
 message(STATUS "Building ${TARGET_TRIPLET}-rel")
+
 vcpkg_execute_required_process(
-    COMMAND ${NMAKE} /f Makefile.msvc rebuild OUTDIR=${OUTDIR}
+	COMMAND ${SCRIPTS_DIR}/make-libxml2.bat ${UWP_PLATFORM} ${OUTDIR}
     WORKING_DIRECTORY ${SCRIPTS_DIR}
     LOGNAME build-${TARGET_TRIPLET}-rel
 )
+
+
 message(STATUS "Building ${TARGET_TRIPLET}-rel done")
 
-message(STATUS "Installing ${TARGET_TRIPLET}-rel")
-vcpkg_execute_required_process(
-    COMMAND ${NMAKE} /f Makefile.msvc install OUTDIR=${OUTDIR}
-    WORKING_DIRECTORY ${SCRIPTS_DIR}
-    LOGNAME install-${TARGET_TRIPLET}-rel
-)
 message(STATUS "Installing ${TARGET_TRIPLET}-rel done")
 
 
