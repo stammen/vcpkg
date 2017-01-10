@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(bzip2)
 
+add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE) #allow deprecated functions
+
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
     add_definitions(-DBZ_DEBUG) # enable extra assertions
 endif()
