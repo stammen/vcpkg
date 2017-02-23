@@ -20,12 +20,19 @@ find_program(NMAKE nmake)
 vcpkg_apply_patches(
     SOURCE_PATH ${SOURCE_PATH}/
     PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-Fix-makefile.patch
+            ${CMAKE_CURRENT_LIST_DIR}/0002-Fix-uwp.patch
 )
 
 set(SCRIPTS_DIR ${SOURCE_PATH}/win32)
+set(BUILD_UWP no)
+
+if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+    set(BUILD_UWP yes)
+endif()
 
 set(CONFIGURE_COMMAND_TEMPLATE cscript configure.js
     zlib=yes
+    buildUWP=${BUILD_UWP}
     cruntime=@CRUNTIME@
     debug=@DEBUGMODE@
     prefix=@INSTALL_DIR@
