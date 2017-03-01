@@ -7,6 +7,11 @@ vcpkg_download_distfile(ARCHIVE
 )
 vcpkg_extract_source_archive(${ARCHIVE})
 
+if (VCPKG_CMAKE_SYSTEM_NAME STREQUAL WindowsStore)
+	set(VCPKG_LIBRARY_LINKAGE static)
+endif()
+
+
 vcpkg_apply_patches(
     SOURCE_PATH ${SOURCE_PATH}
     PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-Support-Windows-DLLs-via-CMAKE_WINDOWS_EXPORT_ALL_SY.patch
@@ -19,8 +24,8 @@ vcpkg_configure_cmake(
     OPTIONS
         -DCONFIG_INSTALL_PATH=share/freetype
         -DWITH_ZLIB=ON
-        -DWITH_BZip2=ON
-        -DWITH_PNG=ON
+        -DWITH_BZip2=OFF
+        -DWITH_PNG=OFF
         -DWITH_HarfBuzz=OFF
 )
 
