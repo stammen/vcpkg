@@ -1,0 +1,71 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a59efc9..c01a776 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -39,6 +39,15 @@ option(BUILD_BINDINGS "Build the bindings" ON)
+ option(NO_ITUNES_HACKS "Disable workarounds for iTunes bugs" OFF)
+ 
+ add_definitions(-DHAVE_CONFIG_H)
++
++if(MSVC)
++  add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
++  if(CMAKE_BUILD_TYPE MATCHES "Debug")
++    #needed for Kodi debug builds
++    add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
++  endif()
++endif()
++
+ set(TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
+ 
+ ## the following are directories where stuff will be installed to
+diff --git a/taglib/toolkit/tfilestream.cpp b/taglib/toolkit/tfilestream.cpp
+index 5205bae..a1ac7e4 100644
+--- a/taglib/toolkit/tfilestream.cpp
++++ b/taglib/toolkit/tfilestream.cpp
+@@ -47,6 +47,17 @@ namespace
+ 
+   const FileHandle InvalidFileHandle = INVALID_HANDLE_VALUE;
+ 
++#if defined(WINAPI_FAMILY) || WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP
++  FileHandle openFile(const FileName &path, bool readOnly)
++  {
++    const DWORD access = readOnly ? GENERIC_READ : (GENERIC_READ | GENERIC_WRITE);
++
++    if (!path.wstr().empty())
++      return CreateFile2(path.wstr().c_str(), access, FILE_SHARE_READ, OPEN_EXISTING, NULL);
++    else
++      return InvalidFileHandle;
++  }
++#else
+   FileHandle openFile(const FileName &path, bool readOnly)
+   {
+     const DWORD access = readOnly ? GENERIC_READ : (GENERIC_READ | GENERIC_WRITE);
+@@ -58,6 +69,7 @@ namespace
+     else
+       return InvalidFileHandle;
+   }
++#endif
+ 
+   void closeFile(FileHandle file)
+   {
+@@ -427,6 +439,20 @@ long FileStream::tell() const
+ #endif
+ }
+ 
++#if defined(WINAPI_FAMILY) || WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP
++DWORD GetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh)
++{
++  FILE_STANDARD_INFO info;
++  if (GetFileInformationByHandleEx(hFile, FileStandardInfo, &info, sizeof(info)))
++  {
++    *lpFileSizeHigh = info.EndOfFile.HighPart;
++    return info.EndOfFile.LowPart;
++  }
++  return 0;
++}
++#endif
++
++
+ long FileStream::length()
+ {
+   if(!isOpen()) {

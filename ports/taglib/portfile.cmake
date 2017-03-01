@@ -15,6 +15,11 @@ vcpkg_download_distfile(ARCHIVE
 )
 vcpkg_extract_source_archive(${ARCHIVE})
 
+vcpkg_apply_patches(
+    SOURCE_PATH ${SOURCE_PATH}
+    PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-Fix-uwp.patch
+)
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA # Disable this option if project cannot be built with Ninja
@@ -25,6 +30,8 @@ vcpkg_configure_cmake(
 
 vcpkg_install_cmake()
 
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+
 # Handle copyright
-#file(COPY ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/taglib)
-#file(RENAME ${CURRENT_PACKAGES_DIR}/share/taglib/LICENSE ${CURRENT_PACKAGES_DIR}/share/taglib/copyright)
+file(COPY ${SOURCE_PATH}/COPYING.MPL DESTINATION ${CURRENT_PACKAGES_DIR}/share/taglib)
+file(RENAME ${CURRENT_PACKAGES_DIR}/share/taglib/COPYING.MPL ${CURRENT_PACKAGES_DIR}/share/taglib/copyright)
