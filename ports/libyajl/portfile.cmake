@@ -30,7 +30,6 @@ message(STATUS "Installing")
 
 set(RELDIR ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/yajl-2.0.1)
 set(DBGDIR ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/yajl-2.0.1)
-message(****RELDIR: ${RELDIR})
 
 file(COPY ${RELDIR}/include/yajl DESTINATION ${CURRENT_PACKAGES_DIR}/include)
 file(INSTALL ${DBGDIR}/lib/Debug/yajl_s.lib DESTINATION ${CURRENT_PACKAGES_DIR}/debug/lib RENAME yajld.lib)
