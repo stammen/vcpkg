@@ -1,0 +1,32 @@
+diff --git a/src/microhttpd/connection.c b/src/microhttpd/connection.c
+index 5c103d2..5b896e0 100644
+--- a/src/microhttpd/connection.c
++++ b/src/microhttpd/connection.c
+@@ -858,7 +858,7 @@ build_header_response (struct MHD_Connection *connection)
+   uint32_t rc;
+   const char *client_requested_close;
+   const char *response_has_close;
+-  const char *response_has_keepalive;
++  const char *response_has_keepalive = NULL;
+   const char *have_encoding;
+   const char *have_content_length;
+   int must_add_close;
+diff --git a/src/microhttpd/daemon.c b/src/microhttpd/daemon.c
+index fd8754c..0509002 100644
+--- a/src/microhttpd/daemon.c
++++ b/src/microhttpd/daemon.c
+@@ -1940,7 +1940,13 @@ static int
+ make_noninheritable (struct MHD_Daemon *daemon,
+                      MHD_socket sock)
+ {
+-#ifdef MHD_WINSOCK_SOCKETS
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++    MHD_DLOG(daemon,
++        "Windows 10 UWP cannot socket non-inheritable: %s\n",
++        MHD_socket_last_strerr_());
++
++    return MHD_NO;
++#elif defined(MHD_WINSOCK_SOCKETS)
+   if (!SetHandleInformation ((HANDLE)sock, HANDLE_FLAG_INHERIT, 0))
+     {
+ #ifdef HAVE_MESSAGES
