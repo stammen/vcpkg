@@ -1,16 +1,16 @@
 diff --git a/pcre_compile.c b/pcre_compile.c
-index 7cd3950..c0834d4 100644
+index 0efad26..31cfabc 100644
 --- a/pcre_compile.c
 +++ b/pcre_compile.c
-@@ -4484,6 +4484,7 @@ pcre_uchar *previous = NULL;
+@@ -4467,6 +4467,7 @@ pcre_uchar *previous = NULL;
  pcre_uchar *previous_callout = NULL;
- size_t item_hwm_offset = 0;
+ size_t save_hwm_offset = 0;
  pcre_uint8 classbits[32];
 +pcre_uchar *slot = NULL;
  
  /* We can fish out the UTF-8 setting once and for all into a BOOL, but we
  must not do this for other options (e.g. PCRE_EXTENDED) because they may change
-@@ -6727,7 +6728,6 @@ for (;; ptr++)
+@@ -6634,7 +6635,6 @@ for (;; ptr++)
        int i, set, unset, namelen;
        int *optset;
        const pcre_uchar *name;

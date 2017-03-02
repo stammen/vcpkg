@@ -7,11 +7,11 @@
 #
 
 include(vcpkg_common_functions)
-set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/pcre-8.39)
+set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/pcre-8.37)
 vcpkg_download_distfile(ARCHIVE
-    URLS "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.39.zip" "https://downloads.sourceforge.net/project/pcre/pcre/8.39/pcre-8.39.zip"
-    FILENAME "pcre-8.39.zip"
-    SHA512 14e6336fe603b7110ba9d54a92af8449bbd4a82fe33d14bc912a048336fc90686464354141316c7890e80e7501af88f657cb7247de6717674e80ba044a279a00
+    URLS "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.37.zip" "https://downloads.sourceforge.net/project/pcre/pcre/8.37/pcre-8.37.zip"
+    FILENAME "pcre-8.37.zip"
+    SHA512 3a116d15208b3737c663031a0cd2829e72addabd6f9963edfa52aea91f90d6e4c136696ba7c6ebe1c62138b5ed90d842a3f74b09e25f5ea923cab510a81168b7
 )
 vcpkg_extract_source_archive(${ARCHIVE})
 
@@ -24,7 +24,7 @@ vcpkg_apply_patches(
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     OPTIONS -DPCRE_BUILD_TESTS=NO
-            -DPCRE_BUILD_PCREGREP=NO
+            -DPCRE_BUILD_PCREGREP=YES
             -DPCRE_BUILD_PCRE32=YES
             -DPCRE_BUILD_PCRE16=YES
             -DPCRE_BUILD_PCRE8=YES
@@ -54,6 +54,8 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/man)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/man)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/share/doc)
+file(REMOVE ${CURRENT_PACKAGES_DIR}/bin/pcregrep.exe)
+file(REMOVE ${CURRENT_PACKAGES_DIR}/debug/bin/pcregrep.exe)
 
 # Handle copyright
 file(COPY ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/pcre)
