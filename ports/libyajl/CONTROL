@@ -1,0 +1,3 @@
+Source: libyajl
+Version: 2.0.1-0
+Description: A fast streaming JSON parsing library in C. http://lloyd.github.com/yajl
