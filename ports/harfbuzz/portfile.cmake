@@ -23,10 +23,15 @@ vcpkg_download_distfile(ARCHIVE
 file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-src)
 vcpkg_extract_source_archive(${ARCHIVE} ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-src)
 
+if (VCPKG_CMAKE_SYSTEM_NAME STREQUAL WindowsStore)
+	vcpkg_apply_patches(
+		SOURCE_PATH ${SOURCE_PATH}
+		PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-Fix-uwp.patch
+	)
+endif()
+
 file(WRITE ${SOURCE_PATH}/win32/msvc_recommended_pragmas.h "/* I'm expected to exist */")
 
-# for GObject support, harfbuzz expects glib-mkenums tool (perl script) to be availible in $(PREFIX)/bin
-file(COPY ${CURRENT_INSTALLED_DIR}/tools/glib/glib-mkenums DESTINATION ${SOURCE_PATH}/bin)
 vcpkg_find_acquire_program(PERL)
 
 file(TO_NATIVE_PATH "${PERL}" PERL_INTERPRETER)
@@ -36,7 +41,7 @@ file(TO_NATIVE_PATH "${VCPKG_ROOT_DIR}/installed/${TARGET_TRIPLET}/include" INCL
 file(TO_NATIVE_PATH "${VCPKG_ROOT_DIR}/installed/${TARGET_TRIPLET}/debug/lib" LIB_DIR_DBG)
 file(TO_NATIVE_PATH "${VCPKG_ROOT_DIR}/installed/${TARGET_TRIPLET}/lib" LIB_DIR_REL)
 
-set(DEPENDENCIES FREETYPE=1 GLIB=1 GOBJECT=1)
+set(DEPENDENCIES FREETYPE=1)
 
 vcpkg_execute_required_process(
     COMMAND ${NMAKE} -f Makefile.vc CFG=debug ${DEPENDENCIES} FREETYPE_DIR=${INCLUDE_DIR} ADDITIONAL_LIB_DIR=${LIB_DIR_DBG}
@@ -54,6 +59,8 @@ vcpkg_execute_required_process(
 
 file(TO_NATIVE_PATH "${CURRENT_PACKAGES_DIR}/debug" NATIVE_PACKAGES_DIR_DBG)
 
+set( ENV{LDFLAGS} /APPCONTAINER "WindowsApp.lib" )
+ 
 vcpkg_execute_required_process(
     COMMAND ${NMAKE} -f Makefile.vc CFG=debug ${DEPENDENCIES} PREFIX=${NATIVE_PACKAGES_DIR_DBG} install
     WORKING_DIRECTORY ${SOURCE_PATH}/win32/
@@ -63,16 +70,12 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 
 file(TO_NATIVE_PATH "${CURRENT_PACKAGES_DIR}" NATIVE_PACKAGES_DIR_REL)
 
+set( ENV{LDFLAGS} /APPCONTAINER "WindowsApp.lib" )
 vcpkg_execute_required_process(
     COMMAND ${NMAKE} -f Makefile.vc CFG=release ${DEPENDENCIES} PREFIX=${NATIVE_PACKAGES_DIR_REL} install
     WORKING_DIRECTORY ${SOURCE_PATH}/win32/
     LOGNAME nmake-install-${TARGET_TRIPLET}-release
 )
-
-file(GLOB EXECUTABLES
-    ${CURRENT_PACKAGES_DIR}/bin/*.exe
-    ${CURRENT_PACKAGES_DIR}/debug/bin/*.exe)
-file(REMOVE ${EXECUTABLES})
 
 # Handle copyright
 file(COPY ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/harfbuzz)
