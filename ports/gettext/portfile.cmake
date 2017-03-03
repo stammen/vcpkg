@@ -28,6 +28,12 @@ vcpkg_apply_patches(
     PATCHES "${CMAKE_CURRENT_LIST_DIR}/0001-Fix-macro-definitions.patch"
 )
 
+vcpkg_apply_patches(
+    SOURCE_PATH ${SOURCE_PATH}
+    PATCHES ${CMAKE_CURRENT_LIST_DIR}/0002-Fix-UWP.patch
+)
+
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
 )

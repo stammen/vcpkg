@@ -1,0 +1,130 @@
+diff --git a/gettext-runtime/config.h b/gettext-runtime/config.h
+index cde9f23..0fd54de 100644
+--- a/gettext-runtime/config.h
++++ b/gettext-runtime/config.h
+@@ -659,6 +659,13 @@
+ # define DLL_VARIABLE
+ #endif
+ 
++/* On Windows 10 UWP getenv() is not supported  */
++#if defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++#include <io.h>  
++#define getenv(x) NULL
++#endif
++
++
+ /* Extra OS/2 (emx+gcc) defines.  */
+ #ifdef __EMX__
+ # include "intl/os2compat.h"
+diff --git a/gettext-runtime/intl/langprefs.c b/gettext-runtime/intl/langprefs.c
+index aeb1c4e..8278777 100644
+--- a/gettext-runtime/intl/langprefs.c
++++ b/gettext-runtime/intl/langprefs.c
+@@ -163,6 +163,7 @@ _nl_language_preferences_win32_ME (HMODULE kernel32)
+ static const char *
+ _nl_language_preferences_win32_95 ()
+ {
++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+   HKEY desktop_resource_locale_key;
+ 
+   if (RegOpenKeyExA (HKEY_CURRENT_USER,
+@@ -200,6 +201,7 @@ _nl_language_preferences_win32_95 ()
+             }
+         }
+     }
++#endif
+   return NULL;
+ }
+ 
+@@ -214,10 +216,13 @@ static const char *
+ _nl_language_preferences_win32_system (HMODULE kernel32)
+ {
+   const char *languages = NULL;
++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
++
+   /* Ignore the warning on mingw here. mingw has a wrong definition of the last
+      parameter type of ENUMRESLANGPROC.  */
+   EnumResourceLanguages (kernel32, RT_VERSION, MAKEINTRESOURCE (1),
+                          ret_first_language, (LONG_PTR)&languages);
++#endif
+   return languages;
+ }
+ 
+@@ -317,6 +322,7 @@ _nl_language_preferences_default (void)
+ #endif
+ 
+ #ifdef WIN32_NATIVE
++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+   {
+     /* Cache the preferences list, since computing it is expensive.  */
+     static const char *cached_languages;
+@@ -348,6 +354,7 @@ _nl_language_preferences_default (void)
+       return cached_languages;
+   }
+ #endif
++#endif
+ 
+   return NULL;
+ }
+diff --git a/gettext-runtime/intl/localcharset.c b/gettext-runtime/intl/localcharset.c
+index 670b8e6..bc0f67f 100644
+--- a/gettext-runtime/intl/localcharset.c
++++ b/gettext-runtime/intl/localcharset.c
+@@ -461,6 +461,13 @@ locale_charset (void)
+ 
+   static char buf[2 + 10 + 1];
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++  /* from https://social.msdn.microsoft.com/Forums/windowsserver/en-US/f5c99f2a-912e-4489-bf9f-3b74e609b18d/uwpwin32-functions-in-c-libraries-build-for-uwp-arm */
++  sprintf(buf, "CP%u", CP_ACP);
++  codeset = buf; 
++#else
++
++
+   /* The Windows API has a function returning the locale's codepage as a
+      number: GetACP().
+      When the output goes to a console window, it needs to be provided in
+@@ -470,7 +477,7 @@ locale_charset (void)
+      encoding is the best bet.  */
+   sprintf (buf, "CP%u", GetACP ());
+   codeset = buf;
+-
++#endif
+ #elif defined OS2
+ 
+   const char *locale;
+diff --git a/gettext-runtime/intl/localename.c b/gettext-runtime/intl/localename.c
+index 108dd6f..6a48180 100644
+--- a/gettext-runtime/intl/localename.c
++++ b/gettext-runtime/intl/localename.c
+@@ -1446,6 +1446,7 @@ static
+ const char *
+ gl_locale_name_from_win32_LANGID (LANGID langid)
+ {
++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+   /* Activate the new code only when the GETTEXT_MUI environment variable is
+      set, for the time being, since the new code is not well tested.  */
+   if (getenv ("GETTEXT_MUI") != NULL)
+@@ -1463,6 +1464,7 @@ gl_locale_name_from_win32_LANGID (LANGID langid)
+           return namebuf;
+         }
+     }
++#endif
+   /* Internet Explorer has an LCID to RFC3066 name mapping stored in
+      HKEY_CLASSES_ROOT\Mime\Database\Rfc1766.  But we better don't use that
+      since IE's i18n subsystem is known to be inconsistent with the native
+@@ -2826,9 +2828,13 @@ gl_locale_name_default (void)
+   {
+     LCID lcid;
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++    /* from https://social.msdn.microsoft.com/Forums/windowsserver/en-US/f5c99f2a-912e-4489-bf9f-3b74e609b18d/uwpwin32-functions-in-c-libraries-build-for-uwp-arm */
++    lcid = LOCALE_USER_DEFAULT;
++#else
+     /* Use native Windows API locale ID.  */
+     lcid = GetThreadLocale ();
+-
++#endif
+     return gl_locale_name_from_win32_LCID (lcid);
+   }
+ # endif
