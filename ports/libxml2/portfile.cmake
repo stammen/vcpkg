@@ -5,6 +5,10 @@
 #   CURRENT_BUILDTREES_DIR = ${VCPKG_ROOT_DIR}\buildtrees\${PORT}
 #   CURRENT_PACKAGES_DIR  = ${VCPKG_ROOT_DIR}\packages\${PORT}_${TARGET_TRIPLET}
 #
+if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+    include(${CMAKE_CURRENT_LIST_DIR}/portfile-uwp.cmake)
+    return()
+endif()
 
 include(vcpkg_common_functions)
 set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/libxml2-2.9.4)
