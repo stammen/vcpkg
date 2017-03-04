@@ -6,9 +6,18 @@
 #   CURRENT_PACKAGES_DIR  = ${VCPKG_ROOT_DIR}\packages\${PORT}_${TARGET_TRIPLET}
 #
 
-if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
-    include(${CMAKE_CURRENT_LIST_DIR}/portfile-uwp.cmake)
-    return()
+if (NOT VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+	message(FATAL_ERROR "This portfile only supports UWP")
+endif()
+
+if (VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
+	set(UWP_PLATFORM  "arm")
+elseif (VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
+	set(UWP_PLATFORM  "x64")
+elseif (VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+	set(UWP_PLATFORM  "Win32")
+else ()
+	message(FATAL_ERROR "Unsupported architecture")
 endif()
 
 include(vcpkg_common_functions)
@@ -30,9 +39,12 @@ vcpkg_apply_patches(
 
 set(SCRIPTS_DIR ${SOURCE_PATH}/win32)
 
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/make-uwp.bat DESTINATION ${SCRIPTS_DIR})
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/setVSvars.bat DESTINATION ${SCRIPTS_DIR})
+
 set(CONFIGURE_COMMAND_TEMPLATE cscript configure.js
     zlib=yes
-    buildUWP=no
+    buildUWP=yes
     cruntime=@CRUNTIME@
     debug=@DEBUGMODE@
     prefix=@INSTALL_DIR@
@@ -72,20 +84,15 @@ file(TO_NATIVE_PATH "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel" OUTDIR)
 file(MAKE_DIRECTORY "${OUTDIR}")
 message(STATUS "Configuring ${TARGET_TRIPLET}-rel done")
 
-message(STATUS "Building ${TARGET_TRIPLET}-rel")
-vcpkg_execute_required_process(
-    COMMAND ${NMAKE} /f Makefile.msvc rebuild OUTDIR=${OUTDIR}
-    WORKING_DIRECTORY ${SCRIPTS_DIR}
-    LOGNAME build-${TARGET_TRIPLET}-rel
-)
-message(STATUS "Building ${TARGET_TRIPLET}-rel done")
+message(STATUS "Building and installing ${TARGET_TRIPLET}-rel")
 
-message(STATUS "Installing ${TARGET_TRIPLET}-rel")
 vcpkg_execute_required_process(
-    COMMAND ${NMAKE} /f Makefile.msvc install OUTDIR=${OUTDIR}
-    WORKING_DIRECTORY ${SCRIPTS_DIR}
-    LOGNAME install-${TARGET_TRIPLET}-rel
+	COMMAND ${SCRIPTS_DIR}/make-uwp.bat ${OUTDIR} ${UWP_PLATFORM}
+	WORKING_DIRECTORY ${SCRIPTS_DIR}
+	LOGNAME build-${TARGET_TRIPLET}-rel
 )
+
+message(STATUS "Building ${TARGET_TRIPLET}-rel done")
 message(STATUS "Installing ${TARGET_TRIPLET}-rel done")
 
 
@@ -118,19 +125,14 @@ file(MAKE_DIRECTORY "${OUTDIR}")
 message(STATUS "Configuring ${TARGET_TRIPLET}-dbg done")
 
 message(STATUS "Building ${TARGET_TRIPLET}-dbg")
-vcpkg_execute_required_process(
-    COMMAND ${NMAKE} /f Makefile.msvc rebuild OUTDIR=${OUTDIR}
-    WORKING_DIRECTORY ${SCRIPTS_DIR}
-    LOGNAME build-${TARGET_TRIPLET}-dbg
-)
-message(STATUS "Building ${TARGET_TRIPLET}-dbg done")
 
-message(STATUS "Installing ${TARGET_TRIPLET}-dbg")
 vcpkg_execute_required_process(
-    COMMAND ${NMAKE} /f Makefile.msvc install OUTDIR=${OUTDIR}
-    WORKING_DIRECTORY ${SCRIPTS_DIR}
-    LOGNAME install-${TARGET_TRIPLET}-dbg
+	COMMAND ${SCRIPTS_DIR}/make-uwp.bat ${OUTDIR} ${UWP_PLATFORM}
+	WORKING_DIRECTORY ${SCRIPTS_DIR}
+	LOGNAME build-${TARGET_TRIPLET}-dbg
 )
+
+message(STATUS "Building ${TARGET_TRIPLET}-dbg done")
 message(STATUS "Installing ${TARGET_TRIPLET}-dbg done")
 
 #

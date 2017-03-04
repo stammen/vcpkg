@@ -1,0 +1,144 @@
+diff --git a/catalog.c b/catalog.c
+index 6dfdfbb..b530df8 100644
+--- a/catalog.c
++++ b/catalog.c
+@@ -3122,10 +3122,14 @@ xmlInitializeCatalog(void) {
+ 	if (catalogs == NULL)
+ #if defined(_WIN32) && defined(_MSC_VER)
+     {
+-		void* hmodule;
++		void* hmodule = NULL;
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++		hmodule = LoadPackagedLibrary(L"libxml2.dll", NULL);
++#else
+ 		hmodule = GetModuleHandleA("libxml2.dll");
+ 		if (hmodule == NULL)
+ 			hmodule = GetModuleHandleA(NULL);
++#endif
+ 		if (hmodule != NULL) {
+ 			char buf[256];
+ 			unsigned long len = GetModuleFileNameA(hmodule, buf, 255);
+@@ -3179,6 +3183,10 @@ xmlInitializeCatalog(void) {
+     }
+ 
+     xmlRMutexUnlock(xmlCatalogMutex);
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++	if (hmodule)
++		FreeLibrary(hmodule);
++#endif
+ }
+ 
+ 
+diff --git a/libxml.h b/libxml.h
+index 88e515f..4612383 100644
+--- a/libxml.h
++++ b/libxml.h
+@@ -40,6 +40,11 @@
+ #include <libxml/xmlversion.h>
+ #endif
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++#define getenv(x) NULL
++#define GetVersionEx(x) false
++#endif
++
+ #if defined(__Lynx__)
+ #include <stdio.h> /* pull definition of size_t */
+ #include <varargs.h>
+diff --git a/win32/Makefile.msvc b/win32/Makefile.msvc
+index 3e41226..4627087 100644
+--- a/win32/Makefile.msvc
++++ b/win32/Makefile.msvc
+@@ -41,6 +41,10 @@ CPPFLAGS = /nologo /I$(XML_SRCDIR)\include /D "NOLIBTOOL"
+ CPPFLAGS = $(CPPFLAGS) /D "_REENTRANT"
+ !endif
+ 
++!if "$(BUILD_UWP)" == "1"
++CPPFLAGS = $(CPPFLAGS) /MP /GS /GL /analyze- /W3 /Gy /Zc:wchar_t /ZW:nostdlib /Zi /Gm- /O2 /sdl /Zc:inline /fp:precise /D "_WINDLL" /D "_UNICODE" /D "UNICODE" /D "WINAPI_FAMILY=WINAPI_FAMILY_APP" /D "__WRL_NO_DEFAULT_LIB__" /errorReport:prompt /WX- /Zc:forScope /Gd /Oy- /FU"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\lib\store\references\platform.winmd" /Oi /MD /EHsc
++!endif
++
+ # The compiler and its options.
+ CC = cl.exe
+ CFLAGS = /nologo /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "NOLIBTOOL" /W1 $(CRUNTIME)
+@@ -67,6 +71,11 @@ CFLAGS = $(CFLAGS) /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE
+ LD = link.exe
+ LDFLAGS = /nologo /VERSION:$(LIBXML_MAJOR_VERSION).$(LIBXML_MINOR_VERSION)
+ LDFLAGS = $(LDFLAGS) /LIBPATH:$(BINDIR) /LIBPATH:$(LIBPREFIX)
++
++!if "$(BUILD_UWP)" == "1"
++LDFLAGS = $(LDFLAGS) /DYNAMICBASE "WindowsApp.lib" /APPCONTAINER /SUBSYSTEM:CONSOLE /ERRORREPORT:PROMPT
++!endif
++
+ LIBS =
+ !if "$(WITH_FTP)" == "1" || "$(WITH_HTTP)" == "1"
+ LIBS = $(LIBS) wsock32.lib ws2_32.lib
+diff --git a/win32/configure.js b/win32/configure.js
+index 92b9ba0..eece334 100644
+--- a/win32/configure.js
++++ b/win32/configure.js
+@@ -68,6 +68,7 @@ var compiler = "msvc";
+ var cruntime = "/MD";
+ var dynruntime = true;
+ var vcmanifest = false;
++var buildUWP = 0;
+ var buildDebug = 0;
+ var buildStatic = 0;
+ var buildPrefix = ".";
+@@ -153,6 +154,7 @@ function usage()
+ 	txt += "  cruntime:   C-runtime compiler option (only msvc) (" + cruntime + ")\n";
+ 	txt += "  dynruntime: Use the dynamic RTL (only bcb) (" + dynruntime + ")\n";
+ 	txt += "  vcmanifest: Embed VC manifest (only msvc) (" + (vcmanifest? "yes" : "no") + ")\n";
++	txt += "  uwp:        Build Win10 UWP executables (" + (buildUWP? "yes" : "no")  + ")\n";
+ 	txt += "  debug:      Build unoptimised debug executables (" + (buildDebug? "yes" : "no")  + ")\n";
+ 	txt += "  static:     Link xmllint statically to libxml2 (" + (buildStatic? "yes" : "no")  + ")\n";
+ 	txt += "              Note: automatically enabled if cruntime is not /MD or /MDd\n";
+@@ -259,6 +261,7 @@ function discoverVersion()
+ 	vf.WriteLine("WITH_LEGACY=" + (withLegacy? "1" : "0"));
+ 	vf.WriteLine("WITH_OUTPUT=" + (withOutput? "1" : "0"));
+ 	vf.WriteLine("WITH_PYTHON=" + (withPython? "1" : "0"));
++	vf.WriteLine("BUILD_UWP=" + (buildUWP? "1" : "0"));
+ 	vf.WriteLine("DEBUG=" + (buildDebug? "1" : "0"));
+ 	vf.WriteLine("STATIC=" + (buildStatic? "1" : "0"));
+ 	vf.WriteLine("PREFIX=" + buildPrefix);
+@@ -526,6 +529,8 @@ for (i = 0; (i < WScript.Arguments.length) && (error == 0); i++) {
+ 			dynruntime = strToBool(arg.substring(opt.length + 1, arg.length));
+ 		else if (opt == "vcmanifest")
+ 			vcmanifest = strToBool(arg.substring(opt.length + 1, arg.length));
++		else if (opt == "buildUWP")
++			buildUWP = strToBool(arg.substring(opt.length + 1, arg.length));		
+ 		else if (opt == "debug")
+ 			buildDebug = strToBool(arg.substring(opt.length + 1, arg.length));
+ 		else if (opt == "static")
+@@ -693,6 +698,7 @@ if (compiler == "msvc") {
+ 	txtOut += "    Embed Manifest: " + boolToStr(vcmanifest) + "\n";
+ } else if (compiler == "bcb")
+ 	txtOut += "   Use dynamic RTL: " + dynruntime + "\n";
++txtOut += "         Build UWP: " + boolToStr(buildUWP) + "\n";
+ txtOut += "     Debug symbols: " + boolToStr(buildDebug) + "\n";
+ txtOut += "    Static xmllint: " + boolToStr(buildStatic) + "\n";
+ txtOut += "    Install prefix: " + buildPrefix + "\n";
+diff --git a/xmlmodule.c b/xmlmodule.c
+index 50ed666..78dd221 100644
+--- a/xmlmodule.c
++++ b/xmlmodule.c
+@@ -308,7 +308,20 @@ xmlModulePlatformSymbol(void *handle, const char *name, void **symbol)
+ static void *
+ xmlModulePlatformOpen(const char *name)
+ {
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++	if (!name)
++		return NULL;
++	int length = strlen(name);
++	int wLength = MultiByteToWideChar(CP_ACP, 0, name, length, NULL, 0);
++	wchar_t* wName = malloc((wLength + 1) * sizeof(wchar_t));
++	MultiByteToWideChar(CP_ACP, 0, name, length, wName, wLength);
++	wName[wLength] = 0;
++	LoadPackagedLibrary(wName, NULL);
++	if(wName)
++		free(wName);
++#else
+     return LoadLibraryA(name);
++#endif
+ }
+ 
+ /*

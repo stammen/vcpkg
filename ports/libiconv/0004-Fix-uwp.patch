@@ -1,26 +1,25 @@
 diff --git a/libcharset/lib/localcharset.c b/libcharset/lib/localcharset.c
-index 3aceb42..4f04e39 100644
+index 3aceb42..dadd95a 100644
 --- a/libcharset/lib/localcharset.c
 +++ b/libcharset/lib/localcharset.c
-@@ -455,9 +455,11 @@ locale_charset (void)
+@@ -455,7 +455,10 @@ locale_charset (void)
  # endif
  
  #elif defined WIN32_NATIVE
 -
-   static char buf[2 + 10 + 1];
--
 +#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
 +  // GetACP() not available to UWP apps
-+  sprintf (buf, "CP%u", CP_ACP);
++  codeset = NULL;
 +#else
+   static char buf[2 + 10 + 1];
+ 
    /* Woe32 has a function returning the locale's codepage as a number:
-      GetACP().
-      When the output goes to a console window, it needs to be provided in
-@@ -466,6 +468,7 @@ locale_charset (void)
-      But in GUI programs and for output sent to files and pipes, GetACP()
+@@ -467,7 +470,7 @@ locale_charset (void)
       encoding is the best bet.  */
    sprintf (buf, "CP%u", GetACP ());
-+#endif
    codeset = buf;
- 
+-
++#endif
  #elif defined OS2
+ 
+   const char *locale;
