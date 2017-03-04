@@ -1,5 +1,30 @@
+diff --git a/src/hb-ft.h b/src/hb-ft.h
+index dc8ef85..d9948c3 100644
+--- a/src/hb-ft.h
++++ b/src/hb-ft.h
+@@ -33,6 +33,7 @@
+ 
+ #include <ft2build.h>
+ #include FT_FREETYPE_H
++#define generic GenericFromFreeTypeLibrary
+ 
+ HB_BEGIN_DECLS
+ 
+diff --git a/win32/config-msvc.mak b/win32/config-msvc.mak
+index d8b851d..e31ea26 100644
+--- a/win32/config-msvc.mak
++++ b/win32/config-msvc.mak
+@@ -33,7 +33,7 @@ DIRECTWRITE_LIB = dwrite.lib
+ # Please do not change anything beneath this line unless maintaining the NMake Makefiles
+ # Bare minimum features and sources built into HarfBuzz on Windows
+ HB_DEFINES =
+-HB_CFLAGS = /DHAVE_CONFIG_H
++HB_CFLAGS = /DHAVE_CONFIG_H /DWINAPI_FAMILY=WINAPI_FAMILY_APP /D_WINDLL
+ HB_UCDN_CFLAGS = /I..\src\hb-ucdn
+ HB_SOURCES =	\
+ 	$(HB_BASE_sources)		\
 diff --git a/win32/detectenv-msvc.mak b/win32/detectenv-msvc.mak
-index 80a5eed..926a9b2 100644
+index 80a5eed..0ba9844 100644
 --- a/win32/detectenv-msvc.mak
 +++ b/win32/detectenv-msvc.mak
 @@ -132,7 +132,7 @@ CFLAGS = $(CFLAGS_ADD) /W3 /Zi /I.. /I..\src /I. /I$(PREFIX)\include
@@ -7,7 +32,7 @@ index 80a5eed..926a9b2 100644
  ADDITIONAL_LIB_ARG = /libpath:$(ADDITIONAL_LIB_DIR)
  !endif
 -LDFLAGS_BASE = $(LDFLAGS_ARCH) /libpath:$(PREFIX)\lib $(ADDITIONAL_LIB_ARG) /DEBUG
-+LDFLAGS_BASE = $(LDFLAGS_ARCH) /libpath:$(PREFIX)\lib $(ADDITIONAL_LIB_ARG) /DEBUG /APPCONTAINER "WindowsApp.lib"
++LDFLAGS_BASE = /libpath:$(PREFIX)\lib $(ADDITIONAL_LIB_ARG) /DEBUG /APPCONTAINER "WindowsApp.lib"
  
  !if "$(CFG)" == "debug"
  LDFLAGS = $(LDFLAGS_BASE)

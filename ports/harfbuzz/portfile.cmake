@@ -5,6 +5,10 @@
 #   CURRENT_BUILDTREES_DIR = ${VCPKG_ROOT_DIR}\buildtrees\${PORT}
 #   CURRENT_PACKAGES_DIR  = ${VCPKG_ROOT_DIR}\packages\${PORT}_${TARGET_TRIPLET}
 #
+if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+    include(${CMAKE_CURRENT_LIST_DIR}/portfile-uwp.cmake)
+    return()
+endif()
 
 if (VCPKG_LIBRARY_LINKAGE STREQUAL static)
     message(STATUS "Warning: Static building not supported yet. Building dynamic.")
@@ -22,13 +26,6 @@ vcpkg_download_distfile(ARCHIVE
 # Harfbuzz only supports in-source builds, so to make sure we get a clean build, we need to re-extract every time
 file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-src)
 vcpkg_extract_source_archive(${ARCHIVE} ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-src)
-
-if (VCPKG_CMAKE_SYSTEM_NAME STREQUAL WindowsStore)
-	vcpkg_apply_patches(
-		SOURCE_PATH ${SOURCE_PATH}
-		PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-Fix-uwp.patch
-	)
-endif()
 
 file(WRITE ${SOURCE_PATH}/win32/msvc_recommended_pragmas.h "/* I'm expected to exist */")
 
@@ -59,8 +56,6 @@ vcpkg_execute_required_process(
 
 file(TO_NATIVE_PATH "${CURRENT_PACKAGES_DIR}/debug" NATIVE_PACKAGES_DIR_DBG)
 
-set( ENV{LDFLAGS} /APPCONTAINER "WindowsApp.lib" )
- 
 vcpkg_execute_required_process(
     COMMAND ${NMAKE} -f Makefile.vc CFG=debug ${DEPENDENCIES} PREFIX=${NATIVE_PACKAGES_DIR_DBG} install
     WORKING_DIRECTORY ${SOURCE_PATH}/win32/
@@ -70,7 +65,6 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 
 file(TO_NATIVE_PATH "${CURRENT_PACKAGES_DIR}" NATIVE_PACKAGES_DIR_REL)
 
-set( ENV{LDFLAGS} /APPCONTAINER "WindowsApp.lib" )
 vcpkg_execute_required_process(
     COMMAND ${NMAKE} -f Makefile.vc CFG=release ${DEPENDENCIES} PREFIX=${NATIVE_PACKAGES_DIR_REL} install
     WORKING_DIRECTORY ${SOURCE_PATH}/win32/
