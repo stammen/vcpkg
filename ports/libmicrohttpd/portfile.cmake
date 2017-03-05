@@ -38,3 +38,5 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(COPY ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/libmicrohttpd)
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/libmicrohttpd/COPYING ${CURRENT_PACKAGES_DIR}/share/libmicrohttpd/copyright)
 
+vcpkg_copy_pdbs()
+

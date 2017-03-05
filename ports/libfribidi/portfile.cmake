@@ -36,3 +36,6 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/lib/cmake)
 # Handle copyright
 file(COPY ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/libfribidi)
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/libfribidi/COPYING ${CURRENT_PACKAGES_DIR}/share/libfribidi/copyright)
+
+vcpkg_copy_pdbs()
+
