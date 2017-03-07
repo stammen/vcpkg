@@ -136,7 +136,7 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
     BYPRODUCTS ${CMAKE_CURRENT_SOURCE_DIR}/lib/mirroring.tab.i)
 endif()
 
-add_library(fribidi STATIC
+add_library(fribidi
   lib/bidi-types.h
   lib/common.h
   lib/debug.h
