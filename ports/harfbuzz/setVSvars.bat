@@ -1,4 +1,3 @@
-@echo off
 call:set_%1
 exit /b
 :set_universal10.0Win32
@@ -6,7 +5,7 @@ exit /b
 	call "%_VS14VC%vcvarsall" x86 store
 	set _VCPlatform=x86
 	set _VCLibPlat=
-	echo 
+	echo *******set_universal10.0Win32
 	call:setEnv
 	goto :eof
 
