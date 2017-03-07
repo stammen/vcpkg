@@ -54,9 +54,10 @@ endif()
 
 file(TO_NATIVE_PATH "${SDK_ARCHIVE}" SDK_ARCHIVE)
 file(TO_NATIVE_PATH "${SOURCE_PATH}/sdk" SDK_SOURCE_DIR)
+file(TO_NATIVE_PATH "${CURRENT_BUILDTREES_DIR}/msiexec-${TARGET_TRIPLET}.log" MSIEXEC_LOG_PATH)
 
 vcpkg_execute_required_process(
-    COMMAND msiexec /a ${SDK_ARCHIVE} /qn TARGETDIR=${SDK_SOURCE_DIR}
+    COMMAND msiexec /a ${SDK_ARCHIVE} /qn TARGETDIR=${SDK_SOURCE_DIR} /log "${MSIEXEC_LOG_PATH}"
     WORKING_DIRECTORY ${CURRENT_BUILDTREES_DIR}
     LOGNAME extract-sdk
 )
@@ -96,6 +97,7 @@ endif()
 
 # Install debug libraries
 # NOTE: since the binary distribution does not include any debug libraries we simply install the release libraries
+SET(VCPKG_POLICY_ONLY_RELEASE_CRT enabled)
 file(INSTALL
         "${SOURCE_LIB_PATH}/${TRIPLET_SYSTEM_ARCH}/msmpi.lib"
         "${SOURCE_LIB_PATH}/${TRIPLET_SYSTEM_ARCH}/msmpifec.lib"

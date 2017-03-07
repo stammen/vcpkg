@@ -28,6 +28,10 @@ namespace vcpkg::System
         return cmd_execute_and_capture_output(cmd_line.c_str());
     }
 
+    std::wstring create_powershell_script_cmd(const fs::path& script_path);
+
+    std::wstring create_powershell_script_cmd(const fs::path& script_path, const std::wstring& args);
+
     enum class color
     {
         success = 10,
@@ -83,15 +87,6 @@ namespace vcpkg::System
     {
         return println(c, Strings::format(messageTemplate, messageArgs...).c_str());
     }
-
-    struct Stopwatch2
-    {
-        int64_t start_time, end_time, freq;
-
-        void start();
-        void stop();
-        double microseconds() const;
-    };
 
     optional<std::wstring> get_environmental_variable(const wchar_t* varname) noexcept;
 

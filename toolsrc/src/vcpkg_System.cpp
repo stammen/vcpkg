@@ -14,8 +14,8 @@ namespace vcpkg::System
 
     int cmd_execute(const wchar_t* cmd_line)
     {
-        // Flush cout before launching external process
-        std::cout << std::flush;
+        // Flush stdout before launching external process
+        fflush(stdout);
 
         // Basically we are wrapping it in quotes
         const std::wstring& actual_cmd_line = Strings::wformat(LR"###("%s")###", cmd_line);
@@ -25,8 +25,8 @@ namespace vcpkg::System
 
     exit_code_and_output cmd_execute_and_capture_output(const wchar_t* cmd_line)
     {
-        // Flush cout before launching external process
-        std::cout << std::flush;
+        // Flush stdout before launching external process
+        fflush(stdout);
 
         const std::wstring& actual_cmd_line = Strings::wformat(LR"###("%s")###", cmd_line);
 
@@ -49,15 +49,26 @@ namespace vcpkg::System
         return { ec, output };
     }
 
+    std::wstring create_powershell_script_cmd(const fs::path& script_path)
+    {
+        return create_powershell_script_cmd(script_path, L"");
+    }
+
+    std::wstring create_powershell_script_cmd(const fs::path& script_path, const std::wstring& args)
+    {
+        // TODO: switch out ExecutionPolicy Bypass with "Remove Mark Of The Web" code and restore RemoteSigned
+       return Strings::wformat(LR"(powershell -ExecutionPolicy Bypass -Command "& {& '%s' %s}")", script_path.native(), args);
+    }
+
     void print(const char* message)
     {
-        std::cout << message;
+        fputs(message, stdout);
     }
 
     void println(const char* message)
     {
         print(message);
-        std::cout << "\n";
+        putchar('\n');
     }
 
     void print(const color c, const char* message)
@@ -69,14 +80,14 @@ namespace vcpkg::System
         auto original_color = consoleScreenBufferInfo.wAttributes;
 
         SetConsoleTextAttribute(hConsole, static_cast<WORD>(c) | (original_color & 0xF0));
-        std::cout << message;
+        print(message);
         SetConsoleTextAttribute(hConsole, original_color);
     }
 
     void println(const color c, const char* message)
     {
         print(c, message);
-        std::cout << "\n";
+        putchar('\n');
     }
 
     optional<std::wstring> get_environmental_variable(const wchar_t* varname) noexcept
@@ -95,24 +106,5 @@ namespace vcpkg::System
     void set_environmental_variable(const wchar_t* varname, const wchar_t* varvalue) noexcept
     {
         _wputenv_s(varname, varvalue);
-    }
-
-    void Stopwatch2::start()
-    {
-        static_assert(sizeof(start_time) == sizeof(LARGE_INTEGER), "");
-
-        QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&start_time));
-    }
-
-    void Stopwatch2::stop()
-    {
-        QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&end_time));
-        QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&freq));
-    }
-
-    double Stopwatch2::microseconds() const
-    {
-        return (reinterpret_cast<const LARGE_INTEGER*>(&end_time)->QuadPart -
-                reinterpret_cast<const LARGE_INTEGER*>(&start_time)->QuadPart) * 1000000.0 / reinterpret_cast<const LARGE_INTEGER*>(&freq)->QuadPart;
     }
 }

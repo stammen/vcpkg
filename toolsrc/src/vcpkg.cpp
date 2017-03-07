@@ -13,6 +13,7 @@
 #include "vcpkg_Input.h"
 #include "Paragraphs.h"
 #include "vcpkg_Strings.h"
+#include "vcpkg_Chrono.h"
 
 using namespace vcpkg;
 
@@ -153,8 +154,6 @@ static void loadConfig()
     }
 }
 
-static System::Stopwatch2 g_timer;
-
 static std::string trim_path_from_command_line(const std::string& full_command_line)
 {
     Checks::check_exit(full_command_line.size() > 0, "Internal failure - cannot have empty command line");
@@ -175,19 +174,18 @@ static std::string trim_path_from_command_line(const std::string& full_command_l
     return std::string(it, full_command_line.cend());
 }
 
+static ElapsedTime g_timer;
+
 int wmain(const int argc, const wchar_t* const* const argv)
 {
     if (argc == 0)
         std::abort();
 
-    std::cout.sync_with_stdio(false);
-    std::cout.imbue(std::locale::classic());
-
-    g_timer.start();
+    g_timer = ElapsedTime::createStarted();
     atexit([]()
         {
-            g_timer.stop();
-            TrackMetric("elapsed_us", g_timer.microseconds());
+            auto elapsed_us = g_timer.microseconds();
+            TrackMetric("elapsed_us", elapsed_us);
             Flush();
         });
 
@@ -231,17 +229,22 @@ int wmain(const int argc, const wchar_t* const* const argv)
         exc_msg = "unknown error(...)";
     }
     TrackProperty("error", exc_msg);
-    std::cerr
-        << "vcpkg.exe has crashed.\n"
-        << "Please send an email to:\n"
-        << "    " << Commands::Contact::email() << "\n"
-        << "containing a brief summary of what you were trying to do and the following data blob:\n"
-        << "\n"
-        << "Version=" << Commands::Version::version() << "\n"
-        << "EXCEPTION='" << exc_msg << "'\n"
-        << "CMD=\n";
+
+    fflush(stdout);
+    System::print(
+            "vcpkg.exe has crashed.\n"
+            "Please send an email to:\n"
+            "    %s\n"
+            "containing a brief summary of what you were trying to do and the following data blob:\n"
+            "\n"
+            "Version=%s\n"
+            "EXCEPTION='%s'\n"
+            "CMD=\n",
+            Commands::Contact::email(),
+            Commands::Version::version(),
+            exc_msg);
+    fflush(stdout);
     for (int x = 0; x < argc; ++x)
-        std::cerr << Strings::utf16_to_utf8(argv[x]) << "|\n";
-    std::cerr
-        << "\n";
+        System::println("%s|", Strings::utf16_to_utf8(argv[x]));
+    fflush(stdout);
 }
