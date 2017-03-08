@@ -1,69 +1,47 @@
+# Common Ambient Variables:
+#   VCPKG_ROOT_DIR = <C:\path\to\current\vcpkg>
+#   TARGET_TRIPLET is the current triplet (x86-windows, etc)
+#   PORT is the current port name (zlib, etc)
+#   CURRENT_BUILDTREES_DIR = ${VCPKG_ROOT_DIR}\buildtrees\${PORT}
+#   CURRENT_PACKAGES_DIR  = ${VCPKG_ROOT_DIR}\packages\${PORT}_${TARGET_TRIPLET}
+#
 
-if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
-    message(STATUS "Building as static libraries not currently supported. Building as DLLs instead.")
-    set(VCPKG_LIBRARY_LINKAGE "dynamic")
+if (NOT VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+	message(FATAL_ERROR "This portfile only supports UWP")
+endif()
+
+if (VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
+	set(UWP_PLATFORM  "arm")
+elseif (VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
+	set(UWP_PLATFORM  "x64")
+elseif (VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+	set(UWP_PLATFORM  "x86")
+else ()
+	message(FATAL_ERROR "Unsupported architecture")
 endif()
 
 include(vcpkg_common_functions)
-set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/ffmpeg-3.2.4)
-vcpkg_download_distfile(ARCHIVE
-    URLS "http://ffmpeg.org/releases/ffmpeg-3.2.4.tar.bz2"
-    FILENAME "ffmpeg-3.2.4.tar.bz2"
-    SHA512 ba5004d0f2659faa139c7dbf2f0fc6bab1d4e017d919f4ac271a5d2e8e4a3478909176e3a4d1ad33ddf2f62ab28dd9e00ce9be1399efb7cb3276dde79134cdaa
-)
-vcpkg_extract_source_archive(${ARCHIVE})
 
-vcpkg_find_acquire_program(YASM)
-get_filename_component(YASM_EXE_PATH ${YASM} DIRECTORY)
-set(ENV{PATH} "$ENV{PATH};${YASM_EXE_PATH}")
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/BuildFFmpeg.bat DESTINATION ${SOURCE_PATH})
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/FFmpegConfig.sh DESTINATION ${SOURCE_PATH})
 
-vcpkg_acquire_msys(MSYS_ROOT)
-set(BASH ${MSYS_ROOT}/usr/bin/bash.exe)
+set( ENV{MSYS2_BIN} ${BASH} )
+message(************${BASH})
 
-set(_csc_PROJECT_PATH ffmpeg)
-
-file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
-
-if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
-    include(${CMAKE_CURRENT_LIST_DIR}/portfile-uwp.cmake)
-    return()
-endif()
-
-set(OPTIONS "--disable-ffmpeg --disable-ffprobe --disable-doc --enable-debug")
-set(OPTIONS "${OPTIONS} --enable-runtime-cpudetect")
-set(OPTIONS_DEBUG "") # Note: --disable-optimizations can't be used due to http://ffmpeg.org/pipermail/libav-user/2013-March/003945.html
-
-if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
-    set(OPTIONS "${OPTIONS} --disable-static --enable-shared")
-endif()
-
-if(VCPKG_CRT_LINKAGE STREQUAL "dynamic")
-    set(OPTIONS_DEBUG "${OPTIONS_DEBUG} --extra-cflags=-MDd --extra-cxxflags=-MDd --extra-ldflags=-NODEFAULTLIB:libcmt")
-else()
-    set(OPTIONS_DEBUG "${OPTIONS_DEBUG} --extra-cflags=-MTd --extra-cxxflags=-MTd --extra-ldflags=-NODEFAULTLIB:libcmt")
-endif()
 
 message(STATUS "Building ${_csc_PROJECT_PATH} for Release")
 file(MAKE_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
 vcpkg_execute_required_process(
-    COMMAND ${BASH} --noprofile --norc "${CMAKE_CURRENT_LIST_DIR}\\build.sh"
-        "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel" # BUILD DIR
-        "${SOURCE_PATH}" # SOURCE DIR
-        "${CURRENT_PACKAGES_DIR}" # PACKAGE DIR
-        "${OPTIONS}"
-    WORKING_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel
+	COMMAND ${SOURCE_PATH}/BuildFFmpeg.bat win10 release ${UWP_PLATFORM} "${CURRENT_PACKAGES_DIR}"
+	WORKING_DIRECTORY ${SOURCE_PATH}
     LOGNAME build-${TARGET_TRIPLET}-rel
 )
 
 message(STATUS "Building ${_csc_PROJECT_PATH} for Debug")
 file(MAKE_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg)
 vcpkg_execute_required_process(
-    COMMAND ${BASH} --noprofile --norc "${CMAKE_CURRENT_LIST_DIR}\\build.sh"
-        "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg" # BUILD DIR
-        "${SOURCE_PATH}" # SOURCE DIR
-        "${CURRENT_PACKAGES_DIR}/debug" # PACKAGE DIR
-        "${OPTIONS} ${OPTIONS_DEBUG}"
-    WORKING_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg
+	COMMAND ${SOURCE_PATH}/BuildFFmpeg.bat win10 debug ${UWP_PLATFORM} "${CURRENT_PACKAGES_DIR}/debug"
+	WORKING_DIRECTORY ${SOURCE_PATH}
     LOGNAME build-${TARGET_TRIPLET}-dbg
 )
 
