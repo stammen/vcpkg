@@ -19,7 +19,7 @@ index a59efc9..c01a776 100644
  
  ## the following are directories where stuff will be installed to
 diff --git a/taglib/toolkit/tfilestream.cpp b/taglib/toolkit/tfilestream.cpp
-index 5205bae..a1ac7e4 100644
+index 5205bae..a9f9dec 100644
 --- a/taglib/toolkit/tfilestream.cpp
 +++ b/taglib/toolkit/tfilestream.cpp
 @@ -47,6 +47,17 @@ namespace
@@ -48,7 +48,7 @@ index 5205bae..a1ac7e4 100644
  
    void closeFile(FileHandle file)
    {
-@@ -427,6 +439,20 @@ long FileStream::tell() const
+@@ -427,6 +439,19 @@ long FileStream::tell() const
  #endif
  }
  
@@ -64,7 +64,6 @@ index 5205bae..a1ac7e4 100644
 +  return 0;
 +}
 +#endif
-+
 +
  long FileStream::length()
  {
