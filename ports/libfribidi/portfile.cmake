@@ -20,7 +20,7 @@ file(COPY ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt DESTINATION ${SOURCE_PATH})
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     # PREFER_NINJA # Disable this option if project cannot be built with Ninja
-    # OPTIONS -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=True
+    OPTIONS -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=True
     # OPTIONS_RELEASE -DOPTIMIZE=1
     # OPTIONS_DEBUG -DDEBUGGABLE=1
 )
