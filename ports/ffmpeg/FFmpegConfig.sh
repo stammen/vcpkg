@@ -1,4 +1,8 @@
 #!/bin/bash
+set -e
+export PATH=/usr/bin:$PATH
+pacman -Sy --noconfirm --needed diffutils make
+
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd $DIR
 
