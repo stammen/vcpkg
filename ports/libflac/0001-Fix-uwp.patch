@@ -1,0 +1,151 @@
+diff --git a/src/libFLAC/cpu.c b/src/libFLAC/cpu.c
+index b9df19a..a8fa48f 100644
+--- a/src/libFLAC/cpu.c
++++ b/src/libFLAC/cpu.c
+@@ -118,7 +118,7 @@ ia32_cpu_info (FLAC__CPUInfo *info)
+ 		FLAC__cpu_info_x86(1, &flags_eax, &flags_ebx, &flags_ecx, &flags_edx);
+ 	}
+ 	else {
+-		FLAC__cpu_info_asm_ia32(&flags_edx, &flags_ecx);
++		//FLAC__cpu_info_asm_ia32(&flags_edx, &flags_ecx);
+ 	}
+ 
+ 	info->ia32.cmov  = (flags_edx & FLAC__CPUINFO_IA32_CPUID_CMOV ) ? true : false;
+diff --git a/src/libFLAC/windows_unicode_filenames.c b/src/libFLAC/windows_unicode_filenames.c
+index 2404e31..0695311 100644
+--- a/src/libFLAC/windows_unicode_filenames.c
++++ b/src/libFLAC/windows_unicode_filenames.c
+@@ -56,9 +56,11 @@ static wchar_t *wchar_from_utf8(const char *str)
+ 	return widestr;
+ }
+ 
+-
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++static FLAC__bool utf8_filenames = true;
++#else
+ static FLAC__bool utf8_filenames = false;
+-
++#endif
+ 
+ void flac_internal_set_utf8_filenames(FLAC__bool flag)
+ {
+@@ -183,6 +185,21 @@ int flac_internal_rename_utf8(const char *oldname, const char *newname)
+ 	}
+ }
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++HANDLE WINAPI flac_internal_CreateFile_utf8(const char *lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile)
++{
++  wchar_t *wname;
++  HANDLE handle = INVALID_HANDLE_VALUE;
++
++  if ((wname = wchar_from_utf8(lpFileName)) != NULL) {
++    handle = CreateFile2(wname, dwDesiredAccess, dwShareMode, dwCreationDisposition, NULL);
++    free(wname);
++  }
++
++  return handle;
++}
++
++#else
+ HANDLE WINAPI flac_internal_CreateFile_utf8(const char *lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile)
+ {
+ 	if (!utf8_filenames) {
+@@ -199,3 +216,4 @@ HANDLE WINAPI flac_internal_CreateFile_utf8(const char *lpFileName, DWORD dwDesi
+ 		return handle;
+ 	}
+ }
++#endif
+diff --git a/src/share/win_utf8_io/win_utf8_io.c b/src/share/win_utf8_io/win_utf8_io.c
+index c61d27f..39ba90f 100644
+--- a/src/share/win_utf8_io/win_utf8_io.c
++++ b/src/share/win_utf8_io/win_utf8_io.c
+@@ -98,17 +98,29 @@ static wchar_t *wchar_from_utf8(const char *str)
+ 	return widestr;
+ }
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
+ /* retrieve WCHAR commandline, expand wildcards and convert everything to UTF-8 */
+ int get_utf8_argv(int *argc, char ***argv)
+ {
+-	typedef int (__cdecl *wgetmainargs_t)(int*, wchar_t***, wchar_t***, int, int*);
+-	wgetmainargs_t wgetmainargs;
+-	HMODULE handle;
+-	int wargc;
+-	wchar_t **wargv;
+-	wchar_t **wenv;
+-	char **utf8argv;
+-	int ret, i;
++#ifdef _DEBUG
++  OutputDebugString(L"get_utf8_argv() not support for Windows Store builds\n");
++#endif
++  flac_set_utf8_filenames(true);
++  return 1;
++}
++#else
++
++/* retrieve WCHAR commandline, expand wildcards and convert everything to UTF-8 */
++int get_utf8_argv(int *argc, char ***argv)
++{
++  typedef int(__cdecl *wgetmainargs_t)(int*, wchar_t***, wchar_t***, int, int*);
++  wgetmainargs_t wgetmainargs;
++  HMODULE handle;
++  int wargc;
++  wchar_t **wargv;
++  wchar_t **wenv;
++  char **utf8argv;
++  int ret, i;
+ 
+ 	if ((handle = LoadLibrary("msvcrt.dll")) == NULL) return 1;
+ 	if ((wgetmainargs = (wgetmainargs_t)GetProcAddress(handle, "__wgetmainargs")) == NULL) {
+@@ -148,6 +160,8 @@ int get_utf8_argv(int *argc, char ***argv)
+ 
+ 	return ret;
+ }
++#endif
++
+ 
+ /* return number of characters in the UTF-8 string */
+ size_t strlen_utf8(const char *str)
+@@ -164,11 +178,13 @@ size_t strlen_utf8(const char *str)
+ int win_get_console_width(void)
+ {
+ 	int width = 80;
++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+ 	CONSOLE_SCREEN_BUFFER_INFO csbi;
+ 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+ 	if(hOut != INVALID_HANDLE_VALUE && hOut != NULL)
+ 		if (GetConsoleScreenBufferInfo(hOut, &csbi) != 0)
+ 			width = csbi.dwSize.X;
++#endif
+ 	return width;
+ }
+ 
+@@ -176,10 +192,16 @@ int win_get_console_width(void)
+ 
+ static int wprint_console(FILE *stream, const wchar_t *text, size_t len)
+ {
+-	DWORD out;
+-	int ret;
++  int ret;
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++  if (stream == stdout || stream == stderr) {
++    OutputDebugString(text);
++    return len;
++  }
++#else
++  DWORD out;
+ 
+-	do {
++  do {
+ 		if (stream == stdout) {
+ 			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+ 			if (hOut == INVALID_HANDLE_VALUE || hOut == NULL || GetFileType(hOut) != FILE_TYPE_CHAR)
+@@ -197,6 +219,7 @@ static int wprint_console(FILE *stream, const wchar_t *text, size_t len)
+ 			return out;
+ 		}
+ 	} while(0);
++#endif
+ 
+ 	ret = fputws(text, stream);
+ 	if (ret < 0)
