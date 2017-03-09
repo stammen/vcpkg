@@ -16,6 +16,9 @@ set PREFIX=%4
 :: Export full current PATH from environment into MSYS2
 set MSYS2_PATH_TYPE=inherit
 
+echo *****%1 %3 CONFIGURATION:%CONFIGURATION% PREFIX:%PREFIX% 
+
+
 if "%1"=="win10" (
 	set BUILD.win10=Y
 ) else if "%1"=="win7" (
@@ -26,15 +29,14 @@ if "%1"=="win10" (
 
 if "%3"=="x86" (
 	set BUILD.x86=Y
-) else if "%2"=="x64" (
+) else if "%3"=="x64" (
 	set BUILD.x64=Y
-) else if "%2"=="ARM" (
+) else if "%3"=="ARM" (
 	set BUILD.ARM=Y
 ) else (
 	goto Usage
 )
 
-echo %1 %2 CONFIGURATION:%CONFIGURATION% PREFIX:%PREFIX% 
 
 
 :: Check for required tools

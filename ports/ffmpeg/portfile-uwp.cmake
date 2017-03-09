@@ -26,16 +26,7 @@ file(COPY ${CMAKE_CURRENT_LIST_DIR}/BuildFFmpeg.bat DESTINATION ${SOURCE_PATH})
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/FFmpegConfig.sh DESTINATION ${SOURCE_PATH})
 
 set( ENV{MSYS2_BIN} ${BASH} )
-message(************${BASH})
-
-
-message(STATUS "Building ${_csc_PROJECT_PATH} for Release")
-file(MAKE_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
-vcpkg_execute_required_process(
-	COMMAND ${SOURCE_PATH}/BuildFFmpeg.bat win10 release ${UWP_PLATFORM} "${CURRENT_PACKAGES_DIR}"
-	WORKING_DIRECTORY ${SOURCE_PATH}
-    LOGNAME build-${TARGET_TRIPLET}-rel
-)
+message(MSYS2_BIN:${BASH})
 
 message(STATUS "Building ${_csc_PROJECT_PATH} for Debug")
 file(MAKE_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg)
@@ -45,17 +36,17 @@ vcpkg_execute_required_process(
     LOGNAME build-${TARGET_TRIPLET}-dbg
 )
 
-file(GLOB DEF_FILES ${CURRENT_PACKAGES_DIR}/lib/*.def ${CURRENT_PACKAGES_DIR}/debug/lib/*.def)
+message(STATUS "Building ${_csc_PROJECT_PATH} for Release")
+file(MAKE_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
+vcpkg_execute_required_process(
+	COMMAND ${SOURCE_PATH}/BuildFFmpeg.bat win10 release ${UWP_PLATFORM} "${CURRENT_PACKAGES_DIR}"
+	WORKING_DIRECTORY ${SOURCE_PATH}
+    LOGNAME build-${TARGET_TRIPLET}-rel
+)
 
-if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
-    set(LIB_MACHINE_ARG /machine:ARM)
-elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
-    set(LIB_MACHINE_ARG /machine:x86)
-elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
-    set(LIB_MACHINE_ARG /machine:x64)
-else()
-    message(FATAL_ERROR "Unsupported target architecture")
-endif()
+
+
+file(GLOB DEF_FILES ${CURRENT_PACKAGES_DIR}/lib/*.def ${CURRENT_PACKAGES_DIR}/debug/lib/*.def)
 
 foreach(DEF_FILE ${DEF_FILES})
     get_filename_component(DEF_FILE_DIR "${DEF_FILE}" DIRECTORY)
@@ -65,7 +56,7 @@ foreach(DEF_FILE ${DEF_FILES})
     file(TO_NATIVE_PATH "${DEF_FILE_DIR}/${OUT_FILE_NAME}" OUT_FILE_NATIVE)
     message(STATUS "Generating ${OUT_FILE_NATIVE}")
     vcpkg_execute_required_process(
-        COMMAND lib.exe /def:${DEF_FILE_NATIVE} /out:${OUT_FILE_NATIVE} ${LIB_MACHINE_ARG}
+        COMMAND lib.exe /def:${DEF_FILE_NATIVE} /out:${OUT_FILE_NATIVE}
         WORKING_DIRECTORY ${CURRENT_PACKAGES_DIR}
         LOGNAME libconvert-${TARGET_TRIPLET}
     )

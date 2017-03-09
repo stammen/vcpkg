@@ -6,9 +6,26 @@ pacman -Sy --noconfirm --needed diffutils make
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd $DIR
 
-echo "***args $1 $2 $3 $4"
+echo "FFmpegConfig.sh: $1 Platform: $2 Configuration: $3 Prefix: $4"
 
-		
+EXTRA_CXXFLAGS=""
+EXTRA_CFLAGS="-MD -DWINAPI_FAMILY=WINAPI_FAMILY_APP -D_WIN32_WINNT=0x0A00"
+if [ "$3" == "debug" ]; then
+	EXTRA_CFLAGS="-MDd -DWINAPI_FAMILY=WINAPI_FAMILY_APP -D_WIN32_WINNT=0x0A00"	
+	EXTRA_CXXFLAGS="-MDd"
+fi
+
+EXTRA_LDFLAGS="-APPCONTAINER WindowsApp.lib"
+if [ "$3" == "debug" ]; then
+	EXTRA_LDFLAGS="-APPCONTAINER WindowsApp.lib -NODEFAULTLIB:libcmt"	
+fi
+
+FFMPEG_OPTIONS="--disable-programs --disable-dxva2 --enable-postproc --enable-zlib --disable-devices --disable-crystalhd --enable-muxer=spdif --enable-muxer=adts --enable-muxer=asf --enable-muxer=ipod --enable-encoder=ac3 --enable-encoder=aac --enable-encoder=wmav2 --enable-encoder=png --enable-encoder=mjpeg --enable-protocol=http"
+echo FFMPEG_OPTIONS:$FFMPEG_OPTIONS
+echo EXTRA_CFLAGS:$EXTRA_CFLAGS
+echo EXTRA_CXXFLAGS:$EXTRA_CXXFLAGS
+echo EXTRA_LDFLAGS:$EXTRA_LDFLAGS
+
 if [ "$1" == "Win10" ]; then
     echo "Make Win10"
 
@@ -17,32 +34,16 @@ if [ "$1" == "Win10" ]; then
         rm -rf Output/Windows10/x86/$3
         mkdir -p Output/Windows10/x86/$3
         cd Output/Windows10/x86/$3
-		pwd
-        ../../../../configure \
+        ../../../../configure $FFMPEG_OPTIONS\
         --toolchain=msvc \
-        --disable-dxva2 \
-        --arch=x86 \
-        --enable-shared \
-        --enable-postproc \
-        --enable-zlib \
-        --disable-static \
-        --disable-programs \
-        --disable-devices \
-        --disable-crystalhd \
-        --enable-muxer=spdif \
-        --enable-muxer=adts \
-        --enable-muxer=asf \
-        --enable-muxer=ipod \
-        --enable-encoder=ac3 \
-        --enable-encoder=aac \
-        --enable-encoder=wmav2 \
-        --enable-encoder=png \
-        --enable-encoder=mjpeg \
-        --enable-protocol=http \
-        --enable-cross-compile \
         --target-os=win32 \
-        --extra-cflags="-MD -DWINAPI_FAMILY=WINAPI_FAMILY_APP -D_WIN32_WINNT=0x0A00" \
-        --extra-ldflags="-APPCONTAINER WindowsApp.lib" \
+        --arch=x86 \
+        --enable-cross-compile \
+        --enable-shared \
+		--disable-static \
+        --extra-cflags="$EXTRA_CFLAGS" \
+        --extra-cxxflags="$EXTRA_CXXFLAGS" \
+        --extra-ldflags="$EXTRA_LDFLAGS" \
         --prefix=$4
         make install
 
@@ -51,17 +52,16 @@ if [ "$1" == "Win10" ]; then
         rm -rf Output/Windows10/x64/$3
         mkdir -p Output/Windows10/x64/$3
         cd Output/Windows10/x64/$3
-        ../../../../configure \
+        ../../../../configure $FFMPEG_OPTIONS\
         --toolchain=msvc \
-        --disable-programs \
-        --disable-d3d11va \
-        --disable-dxva2 \
-        --arch=x86_64 \
-        --enable-shared \
-        --enable-cross-compile \
         --target-os=win32 \
-        --extra-cflags="-MD -DWINAPI_FAMILY=WINAPI_FAMILY_APP -D_WIN32_WINNT=0x0A00" \
-        --extra-ldflags="-APPCONTAINER WindowsApp.lib" \
+		--arch=x86_64 \
+        --enable-cross-compile \
+        --enable-shared \
+		--disable-static \
+		--extra-cflags="$EXTRA_CFLAGS" \
+        --extra-cxxflags="$EXTRA_CXXFLAGS" \
+        --extra-ldflags="$EXTRA_LDFLAGS" \
         --prefix=$4
         make install
 
@@ -70,20 +70,19 @@ if [ "$1" == "Win10" ]; then
         rm -rf Output/Windows10/ARM/$3
         mkdir -p Output/Windows10/ARM/$3
         cd Output/Windows10/ARM/$3
-        ../../../../configure \
+        ../../../../configure $FFMPEG_OPTIONS\
         --toolchain=msvc \
-        --disable-programs \
-        --disable-d3d11va \
-        --disable-dxva2 \
+        --target-os=win32 \
         --arch=arm \
         --as=armasm \
         --cpu=armv7 \
+        --enable-cross-compile \
         --enable-thumb \
         --enable-shared \
-        --enable-cross-compile \
-        --target-os=win32 \
-        --extra-cflags="-MD -DWINAPI_FAMILY=WINAPI_FAMILY_APP -D_WIN32_WINNT=0x0A00 -D__ARM_PCS_VFP" \
-        --extra-ldflags="-APPCONTAINER WindowsApp.lib" \
+  		--disable-static \
+        --extra-cflags="$EXTRA_CFLAGS -D__ARM_PCS_VFP" \
+        --extra-cxxflags="$EXTRA_CXXFLAGS" \
+        --extra-ldflags="$EXTRA_LDFLAGS" \
         --prefix=$4
         make install
 
@@ -98,15 +97,13 @@ elif [ "$1" == "Win7" ]; then
         rm -rf Output/Windows7/x86/$3
         mkdir -p Output/Windows7/x86/$3
         cd Output/Windows7/x86/$3
-        ../../../../configure \
+        ../../../../configure $FFMPEG_OPTIONS\
         --toolchain=msvc \
-        --disable-programs \
-        --disable-d3d11va \
-        --disable-dxva2 \
-        --arch=x86 \
+		--target-os=win32 \
+		--arch=x86 \
         --enable-shared \
+		--disable-static \
         --enable-cross-compile \
-        --target-os=win32 \
         --extra-cflags="-MD -D_WINDLL" \
         --extra-ldflags="-APPCONTAINER:NO -MACHINE:x86" \
         --prefix=$4
@@ -117,15 +114,13 @@ elif [ "$1" == "Win7" ]; then
         rm -rf Output/Windows7/x64/$3
         mkdir -p Output/Windows7/x64/$3
         cd Output/Windows7/x64/$3
-        ../../../../configure \
+        ../../../../configure $FFMPEG_OPTIONS\
         --toolchain=msvc \
-        --disable-programs \
-        --disable-d3d11va \
-        --disable-dxva2 \
+        --target-os=win32 \
         --arch=amd64 \
         --enable-shared \
-        --enable-cross-compile \
-        --target-os=win32 \
+ 		--disable-static \
+		--enable-cross-compile \
         --extra-cflags="-MD -D_WINDLL" \
         --extra-ldflags="-APPCONTAINER:NO -MACHINE:x64" \
         --prefix=$4
