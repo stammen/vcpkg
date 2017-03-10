@@ -20,7 +20,7 @@ if [ "$3" == "debug" ]; then
 	EXTRA_LDFLAGS="-APPCONTAINER WindowsApp.lib -NODEFAULTLIB:libcmt"	
 fi
 
-FFMPEG_OPTIONS="--disable-programs --disable-dxva2 --enable-postproc --enable-zlib --disable-devices --disable-crystalhd --enable-muxer=spdif --enable-muxer=adts --enable-muxer=asf --enable-muxer=ipod --enable-encoder=ac3 --enable-encoder=aac --enable-encoder=wmav2 --enable-encoder=png --enable-encoder=mjpeg --enable-protocol=http"
+FFMPEG_OPTIONS="--disable-programs --disable-dxva2 --enable-postproc --enable-gpl --enable-zlib --disable-devices --disable-crystalhd --enable-muxer=spdif --enable-muxer=adts --enable-muxer=asf --enable-muxer=ipod --enable-encoder=ac3 --enable-encoder=aac --enable-encoder=wmav2 --enable-encoder=png --enable-encoder=mjpeg --enable-protocol=http"
 echo FFMPEG_OPTIONS:$FFMPEG_OPTIONS
 echo EXTRA_CFLAGS:$EXTRA_CFLAGS
 echo EXTRA_CXXFLAGS:$EXTRA_CXXFLAGS
