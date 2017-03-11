@@ -16,11 +16,12 @@ vcpkg_download_distfile(ARCHIVE
 vcpkg_extract_source_archive(${ARCHIVE})
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt DESTINATION ${SOURCE_PATH})
 
-set(VCPKG_LIBRARY_LINKAGE static)
+#set(VCPKG_LIBRARY_LINKAGE static)
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA # Disable this option if project cannot be built with Ninja
+    OPTIONS -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=True
 )
 
 vcpkg_install_cmake()

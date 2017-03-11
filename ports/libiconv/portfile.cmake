@@ -26,6 +26,7 @@ vcpkg_install_cmake()
 # Handle copyright
 file(COPY ${SOURCE_PATH}/COPYING.LIB DESTINATION ${CURRENT_PACKAGES_DIR}/share/libiconv)
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/libiconv/COPYING.LIB ${CURRENT_PACKAGES_DIR}/share/libiconv/copyright)
+file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/libiconv.lib ${CURRENT_PACKAGES_DIR}/debug/lib/libiconvd.lib)
 
 # clean out the debug include
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)

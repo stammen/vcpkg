@@ -35,5 +35,7 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 # Handle copyright
 file(COPY ${SOURCE_PATH}/COPYING.MPL DESTINATION ${CURRENT_PACKAGES_DIR}/share/taglib)
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/taglib/COPYING.MPL ${CURRENT_PACKAGES_DIR}/share/taglib/copyright)
+file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/tag.lib ${CURRENT_PACKAGES_DIR}/debug/lib/tagd.lib)
+file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/tag_c.lib ${CURRENT_PACKAGES_DIR}/debug/lib/tag_cd.lib)
 
 vcpkg_copy_pdbs()
