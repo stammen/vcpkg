@@ -25,7 +25,7 @@ install(TARGETS crossguid
 if(NOT FC_SKIP_HEADERS)
     install(FILES
         guid.h
-        DESTINATION include/crossguid)
+        DESTINATION include)
 endif()
 
 
