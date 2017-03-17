@@ -32,6 +32,7 @@ if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
             -DENABLE_IPV6=OFF
             -DENABLE_UNIX_SOCKETS=OFF
             -DCMAKE_USE_OPENSSL=ON
+            -DCMAKE_USE_LIBSSH2=OFF
             -DCURL_STATICLIB=${CURL_STATICLIB}
         OPTIONS_DEBUG
             -DENABLE_DEBUG=ON
@@ -43,6 +44,7 @@ else()
             -DBUILD_TESTING=OFF
             -DBUILD_CURL_EXE=OFF
             -DENABLE_MANUAL=OFF
+            -DCMAKE_USE_LIBSSH2=OFF
             -DCURL_STATICLIB=${CURL_STATICLIB}
         OPTIONS_DEBUG
             -DENABLE_DEBUG=ON
