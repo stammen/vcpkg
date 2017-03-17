@@ -28,6 +28,5 @@ else()
 endif()
 
 file(INSTALL ${CMAKE_CURRENT_LIST_DIR}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/zlib RENAME copyright)
-file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/zlibd.lib ${CURRENT_PACKAGES_DIR}/debug/lib/zlib.lib)
 
 vcpkg_copy_pdbs()
