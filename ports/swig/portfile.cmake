@@ -17,7 +17,7 @@ vcpkg_extract_source_archive(${ARCHIVE})
 
 # Handle copyright
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/copyright DESTINATION ${CURRENT_PACKAGES_DIR}/share/swig)
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/readme.h DESTINATION ${CURRENT_PACKAGES_DIR}/include)
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/swig-readme.h DESTINATION ${CURRENT_PACKAGES_DIR}/include)
 
 # copy swig
 file(MAKE_DIRECTORY ${VCPKG_ROOT_DIR}/BuildDependencies/bin)
