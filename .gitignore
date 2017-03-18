@@ -15,6 +15,7 @@
 *.userprefs
 
 # Build results
+BuildDependencies/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
