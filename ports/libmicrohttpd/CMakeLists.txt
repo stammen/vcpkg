@@ -46,7 +46,7 @@ install(TARGETS libmicrohttpd
 if(NOT FC_SKIP_HEADERS)
     install(FILES
         src/include/microhttpd.h
-        DESTINATION include/libmicrohttpd)
+        DESTINATION include)
 endif()
 
 
