@@ -34,3 +34,4 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 # Handle copyright
 file(COPY ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/crossguid)
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/crossguid/LICENSE ${CURRENT_PACKAGES_DIR}/share/crossguid/copyright)
+file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/crossguid.lib ${CURRENT_PACKAGES_DIR}/debug/lib/crossguidd.lib)
