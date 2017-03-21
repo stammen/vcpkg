@@ -25,11 +25,11 @@ file(RENAME ${CURRENT_PACKAGES_DIR}/share/libcdio/LICENSE ${CURRENT_PACKAGES_DIR
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/libcdio-readme.h DESTINATION ${CURRENT_PACKAGES_DIR}/include)
 
 
-file(COPY ${SOURCE_PATH}/project/BuildDependencies/include/cdio DESTINATION ${VCPKG_ROOT_DIR}/BuildDependencies/include)
+file(COPY ${SOURCE_PATH}/project/BuildDependencies/include/cdio DESTINATION ${VCPKG_ROOT_DIR}/../BuildDependencies/include)
 
 #since these libs are NOT UWP libs, copy them to a different dir
-file(MAKE_DIRECTORY ${VCPKG_ROOT_DIR}/BuildDependencies)
-file(MAKE_DIRECTORY ${VCPKG_ROOT_DIR}/BuildDependencies/lib)
-file(COPY ${SOURCE_PATH}/project/BuildDependencies/lib/ DESTINATION ${VCPKG_ROOT_DIR}/BuildDependencies/lib/)
-file(COPY ${SOURCE_PATH}/system/ DESTINATION ${VCPKG_ROOT_DIR}/BuildDependencies/bin/)
+file(MAKE_DIRECTORY ${VCPKG_ROOT_DIR}/../BuildDependencies)
+file(MAKE_DIRECTORY ${VCPKG_ROOT_DIR}/../BuildDependencies/lib)
+file(COPY ${SOURCE_PATH}/project/BuildDependencies/lib/ DESTINATION ${VCPKG_ROOT_DIR}/../BuildDependencies/lib/)
+file(COPY ${SOURCE_PATH}/system/ DESTINATION ${VCPKG_ROOT_DIR}/../BuildDependencies/bin/)
 
