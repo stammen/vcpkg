@@ -20,6 +20,6 @@ file(COPY ${CMAKE_CURRENT_LIST_DIR}/copyright DESTINATION ${CURRENT_PACKAGES_DIR
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/swig-readme.h DESTINATION ${CURRENT_PACKAGES_DIR}/include)
 
 # copy swig
-file(MAKE_DIRECTORY ${VCPKG_ROOT_DIR}/BuildDependencies/bin)
-file(COPY ${SOURCE_PATH} DESTINATION ${VCPKG_ROOT_DIR}/BuildDependencies/bin/)
+file(MAKE_DIRECTORY ${VCPKG_ROOT_DIR}/../BuildDependencies/bin)
+file(COPY ${SOURCE_PATH} DESTINATION ${VCPKG_ROOT_DIR}/../BuildDependencies/bin/)
 
