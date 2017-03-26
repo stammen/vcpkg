@@ -7,23 +7,21 @@
 #
 
 include(vcpkg_common_functions)
-set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/c-pluff-master)
+set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/c-pluff-0.1.3)
 vcpkg_download_distfile(ARCHIVE
-    URLS "https://github.com/jlehtine/c-pluff/archive/master.zip"
-    FILENAME "c-pluff-master.zip"
-    SHA512 c05e489b19fcf0a5a4cb835c043f432e578b6722567a2e11fac42f39d9b8f38006d9053f7a2944a95d1f44d09ac5f6cac83c007efcebeec66b231e27641acb68
+    URLS "https://github.com/jlehtine/c-pluff/archive/0.1.3.zip"
+    FILENAME "c-pluff-0.1.3.zip"
+    SHA512 cc68c40beea57e75771d100fa6a1e68cf58b6f272fa3e505d58b6da0bb3af7c2def0be928a0aaae67308bd9cb3cce4c613355f95abfd9302a823bb1941efe11a
 )
 vcpkg_extract_source_archive(${ARCHIVE})
 
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt DESTINATION ${SOURCE_PATH})
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/cpluffdef.h DESTINATION ${SOURCE_PATH}/libcpluff)
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/dirent.c DESTINATION ${SOURCE_PATH}/libcpluff)
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/dirent.h DESTINATION ${SOURCE_PATH}/libcpluff)
-
 vcpkg_apply_patches(
     SOURCE_PATH ${SOURCE_PATH}
-    PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-Fix-uwp.patch
+    PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-xbmc.patch
 )
+
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt DESTINATION ${SOURCE_PATH})
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/win32/ DESTINATION ${SOURCE_PATH}/libcpluff/win32/)
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}

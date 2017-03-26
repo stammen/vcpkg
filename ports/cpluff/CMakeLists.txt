@@ -14,10 +14,8 @@ find_library(EXPAT_LIBRARY expat)
 add_library(cpluff
     libcpluff/context.c
     libcpluff/cpluff.c
-    libcpluff/dirent.c
     libcpluff/logging.c
     libcpluff/pcontrol.c
-    libcpluff/pdescriptor.c
     libcpluff/pinfo.c
     libcpluff/ploader.c
     libcpluff/pscan.c
@@ -25,10 +23,11 @@ add_library(cpluff
     libcpluff/serial.c
     libcpluff/thread_windows.c
     libcpluff/util.c
+    libcpluff/win32/dirent.c
     kazlib/hash.c
     kazlib/list.c)
 
-target_include_directories(cpluff PRIVATE ./libcpluff ./kazlib ${EXPAT_INCLUDE_DIR})
+target_include_directories(cpluff PRIVATE ./libcpluff ./libcpluff/win32 ./kazlib ${EXPAT_INCLUDE_DIR})
 
 target_link_libraries(cpluff ${EXPAT_LIBRARY})
 
