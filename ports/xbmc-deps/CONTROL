@@ -1,4 +1,4 @@
 Source: xbmc-deps
-Version: 18.0.0-6
-Build-Depends: zlib, openssl, curl, freetype, bzip2, sqlite3, pcre, tinyxml, libyajl, taglib, libmicrohttpd, lzo, libssh, libfribidi, libxslt, libnfs, libass, ffmpeg, fmt, crossguid, swig, libcdio, cpluff
+Version: 18.0.0-7
+Build-Depends: zlib, openssl, curl, freetype, bzip2, sqlite3, pcre, tinyxml, taglib, libmicrohttpd, lzo, libssh, libfribidi, libxslt, libnfs, libass, ffmpeg, fmt, crossguid, swig, libcdio, cpluff, rapidjson
 Description: A vcpkg port that builds the external dependencies for the Win10 UWP version of Kodi <https://github.com/xbmc/xbmc>

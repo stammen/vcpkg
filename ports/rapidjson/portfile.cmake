@@ -1,10 +1,10 @@
 #header-only library
 include(vcpkg_common_functions)
-SET(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/rapidjson-1.1.0)
+SET(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/rapidjson-1.0.2)
 vcpkg_download_distfile(ARCHIVE
-    URLS "https://github.com/miloyip/rapidjson/archive/v1.1.0.zip"
-    FILENAME "rapidjson-v1.1.0.zip"
-    SHA512 4ddbf6dc5d943eb971e7a62910dd78d1cc5cc3016066a443f351d4276d2be3375ed97796e672c2aecd6990f0b332826f8c8ddc7d367193d7b82f0037f4e4012c
+    URLS "https://github.com/miloyip/rapidjson/archive/v1.0.2.zip"
+    FILENAME "rapidjson-v1.0.2.zip"
+    SHA512 b1bbcdf8b56fdc054416d0d024cd472fe511c0c15cb133513bb6575b05089ef5685fb5b1797d6e6c22475088b34659064241846a6a360cc461d74b6b079815a3
 )
 vcpkg_extract_source_archive(${ARCHIVE})
 
