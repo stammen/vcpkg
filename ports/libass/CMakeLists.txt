@@ -28,10 +28,6 @@ endif()
 add_definitions(-DWIN32)
 add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
-endif()
-
 add_library(libass
     libass/ass.c
     libass/ass_bitmap.c

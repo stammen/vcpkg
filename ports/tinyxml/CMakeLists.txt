@@ -10,7 +10,7 @@ endif()
 add_definitions(-DWIN32)
 add_definitions(-DTIXML_USE_STL)
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
+    add_definitions(-D_ITERATOR_DEBUG_LEVEL=2)
 endif()
 
 add_library(tinyxmlSTL

@@ -9,9 +9,6 @@ endif()
 
 add_definitions(-DWIN32)
 add_definitions(-DGUID_WINDOWS)
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
-endif()
 
 add_library(crossguid guid.cpp)
 

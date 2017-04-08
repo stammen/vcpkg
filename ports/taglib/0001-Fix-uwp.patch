@@ -1,18 +1,14 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a59efc9..c01a776 100644
+index a59efc9..f757498 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -39,6 +39,15 @@ option(BUILD_BINDINGS "Build the bindings" ON)
+@@ -39,6 +39,11 @@ option(BUILD_BINDINGS "Build the bindings" ON)
  option(NO_ITUNES_HACKS "Disable workarounds for iTunes bugs" OFF)
  
  add_definitions(-DHAVE_CONFIG_H)
 +
 +if(MSVC)
 +  add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
-+  if(CMAKE_BUILD_TYPE MATCHES "Debug")
-+    #needed for Kodi debug builds
-+    add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
-+  endif()
 +endif()
 +
  set(TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/")

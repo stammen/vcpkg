@@ -12,11 +12,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
     add_definitions(-D_WIN32_WINNT=0x0A00)
 endif()
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    #kodi debug builds need this
-    add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
-endif()
-
 add_library(libmicrohttpd
     src/microhttpd/base64.c
     src/microhttpd/basicauth.c
