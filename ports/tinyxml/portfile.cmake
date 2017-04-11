@@ -30,5 +30,6 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 
 # Handle copyright
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/copyright DESTINATION ${CURRENT_PACKAGES_DIR}/share/tinyxml)
+file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/tinyxmlSTL.lib ${CURRENT_PACKAGES_DIR}/debug/lib/tinyxmlSTLd.lib)
 
 vcpkg_copy_pdbs()
