@@ -28,6 +28,9 @@ file(COPY ${CMAKE_CURRENT_LIST_DIR}/FFmpegConfig.sh DESTINATION ${SOURCE_PATH})
 set( ENV{MSYS2_BIN} ${BASH} )
 message(MSYS2_BIN:${BASH})
 
+set(ENV{LIB} "${CURRENT_INSTALLED_DIR}/lib;${CURRENT_INSTALLED_DIR}/debug/lib")
+set(ENV{INCLUDE} "${CURRENT_INSTALLED_DIR}/include")
+
 message(STATUS "Building ${_csc_PROJECT_PATH} for Debug")
 file(MAKE_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg)
 vcpkg_execute_required_process(
