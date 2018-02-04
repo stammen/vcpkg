@@ -26,13 +26,14 @@ if(CURL_USE_WINSSL)
     set(USE_WINSSL ON)
 endif()
 
-set(UWP_OPTIONS)
+
 if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
     set(UWP_OPTIONS
         -DUSE_WIN32_LDAP=OFF
         -DCURL_DISABLE_TELNET=ON
         -DENABLE_IPV6=OFF
         -DENABLE_UNIX_SOCKETS=OFF
+        -DUSE_NGHTTP2=ON
     )
 endif()
 
