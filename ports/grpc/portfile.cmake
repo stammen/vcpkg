@@ -22,6 +22,7 @@ vcpkg_apply_patches(
     SOURCE_PATH ${SOURCE_PATH}
     PATCHES
         ${CMAKE_CURRENT_LIST_DIR}/disable-csharp-ext.patch
+        ${CMAKE_CURRENT_LIST_DIR}/fix-uwp.patch
 )
 
 if(VCPKG_CRT_LINKAGE STREQUAL static)
