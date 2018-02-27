@@ -11,15 +11,20 @@ vcpkg_download_distfile(ARCHIVE
 )
 vcpkg_extract_source_archive(${ARCHIVE})
 
+vcpkg_apply_patches(
+    SOURCE_PATH ${SOURCE_PATH}
+    PATCHES
+        ${CMAKE_CURRENT_LIST_DIR}/build_fixes.patch
+)
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
-    # dllexport support seem to be broken
-    OPTIONS -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON
-            -DCMAKE_DEBUG_POSTFIX=d
+    OPTIONS
+        -DCMAKE_DEBUG_POSTFIX=d
+        -DWEBP_BUILD_MUX=ON
 )
 
-vcpkg_build_cmake()
 vcpkg_install_cmake()
 
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
@@ -31,3 +36,5 @@ file(COPY ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/libwe
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/libwebp/COPYING ${CURRENT_PACKAGES_DIR}/share/libwebp/copyright)
 
 vcpkg_copy_pdbs()
+
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/FindWebP.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/libwebp)
