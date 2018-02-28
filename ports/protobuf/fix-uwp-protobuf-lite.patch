@@ -1,0 +1,13 @@
+diff --git a/src/google/protobuf/generated_message_table_driven_lite.h b/src/google/protobuf/generated_message_table_driven_lite.h
+index 20b4da2..0bfcdf8 100644
+--- a/src/google/protobuf/generated_message_table_driven_lite.h
++++ b/src/google/protobuf/generated_message_table_driven_lite.h
+@@ -227,7 +227,7 @@ static inline bool HandleString(io::CodedInputStream* input, MessageLite* msg,
+   size_t size;
+ #endif
+ 
+-    string* value;
++    string* value = NULL;
+     switch (cardinality) {
+       case Cardinality_SINGULAR:
+         // TODO(ckennelly): Is this optimal?

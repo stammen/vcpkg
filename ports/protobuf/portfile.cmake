@@ -26,6 +26,8 @@ vcpkg_apply_patches(
         "${CMAKE_CURRENT_LIST_DIR}/001-add-compiler-flag.patch"
         "${CMAKE_CURRENT_LIST_DIR}/export-ParseGeneratorParameter.patch"
         "${CMAKE_CURRENT_LIST_DIR}/fix-uwp.patch"
+        "${CMAKE_CURRENT_LIST_DIR}/fix-uwp-protobuf-lite.patch"
+		
 )
 
 
