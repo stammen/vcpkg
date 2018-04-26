@@ -1,0 +1,30 @@
+diff --git a/src/google/protobuf/generated_message_table_driven_lite.h b/src/google/protobuf/generated_message_table_driven_lite.h
+index 20b4da2..0bfcdf8 100644
+--- a/src/google/protobuf/generated_message_table_driven_lite.h
++++ b/src/google/protobuf/generated_message_table_driven_lite.h
+@@ -227,7 +227,7 @@ static inline bool HandleString(io::CodedInputStream* input, MessageLite* msg,
+   size_t size;
+ #endif
+ 
+-    string* value;
++    string* value = NULL;
+     switch (cardinality) {
+       case Cardinality_SINGULAR:
+         // TODO(ckennelly): Is this optimal?
+diff --git a/src/google/protobuf/stubs/io_win32.cc b/src/google/protobuf/stubs/io_win32.cc
+index fa2cb8b..54892c7 100644
+--- a/src/google/protobuf/stubs/io_win32.cc
++++ b/src/google/protobuf/stubs/io_win32.cc
+@@ -236,7 +236,12 @@ bool as_windows_path(const string& path, wstring* result) {
+   if (!is_path_absolute(mutable_path.c_str()) &&
+       !has_longpath_prefix(mutable_path.c_str())) {
+     char cwd[MAX_PATH];
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++	throw new std::exception("as_windows_path not implemented in UWP");
++	cwd[0] = '\0';
++#else
+     ::GetCurrentDirectoryA(MAX_PATH, cwd);
++#endif
+     mutable_path = join_paths(cwd, mutable_path);
+   }
+   as_wchar_path(normalize(mutable_path), result);

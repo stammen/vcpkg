@@ -12,8 +12,8 @@ endif()
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO grpc/grpc
-    REF v1.8.3
-    SHA512 9bf308252221488840fad7669b8f10143c6e2130585b350b31b8d9f362f55cb1d16e5ee79d9d02ce13521e9471a8d55e8fd6c1ae0b710e22e3f918fb9fdc4d40
+    REF v1.9.1
+    SHA512 2043b76f76680df9759d1eef9d524af2b5f82237cd08428a7aa87cadae516052b37dee470a0850e6d63f685e95f0593900d640f7e4f2fa9de9e8c2b760a82191
     HEAD_REF master
 )
 
@@ -22,6 +22,7 @@ vcpkg_apply_patches(
     SOURCE_PATH ${SOURCE_PATH}
     PATCHES
         ${CMAKE_CURRENT_LIST_DIR}/disable-csharp-ext.patch
+        ${CMAKE_CURRENT_LIST_DIR}/fix-uwp.patch
 )
 
 if(VCPKG_CRT_LINKAGE STREQUAL static)
@@ -39,8 +40,8 @@ vcpkg_configure_cmake(
         -DgRPC_MSVC_STATIC_RUNTIME=${gRPC_MSVC_STATIC_RUNTIME}
         -DgRPC_ZLIB_PROVIDER=package
         -DgRPC_SSL_PROVIDER=package
-        -DgRPC_PROTOBUF_PROVIDER=package
-        -DgRPC_CARES_PROVIDER=package
+        -DgRPC_PROTOBUF_PROVIDER=module
+        -DgRPC_CARES_PROVIDER=none
         -DgRPC_GFLAGS_PROVIDER=none
         -DgRPC_BENCHMARK_PROVIDER=none
         -DgRPC_INSTALL_CSHARP_EXT=OFF

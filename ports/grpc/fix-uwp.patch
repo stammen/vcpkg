@@ -1,0 +1,60 @@
+diff --git a/src/core/lib/security/transport/security_connector.cc b/src/core/lib/security/transport/security_connector.cc
+index c56e459..652493b 100644
+--- a/src/core/lib/security/transport/security_connector.cc
++++ b/src/core/lib/security/transport/security_connector.cc
+@@ -21,6 +21,10 @@
+ #include <stdbool.h>
+ #include <string.h>
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++#include <string>
++#endif
++
+ #include <grpc/slice_buffer.h>
+ #include <grpc/support/alloc.h>
+ #include <grpc/support/host_port.h>
+@@ -937,6 +941,14 @@ static grpc_security_connector_vtable ssl_server_vtable = {
+ static grpc_slice compute_default_pem_root_certs_once(void) {
+   grpc_slice result = grpc_empty_slice();
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++  Windows::Storage::StorageFolder^ appFolder = Windows::ApplicationModel::Package::Current->InstalledLocation;
++  Platform::String^ appPath = appFolder->Path;
++  appPath += L"\\roots.pem";
++  std::wstring w = appPath->Data();
++  std::string path(w.begin(), w.end());
++  grpc_load_file(path.c_str(), 1, &result);
++#else
+   /* First try to load the roots from the environment. */
+   char* default_root_certs_path =
+       gpr_getenv(GRPC_DEFAULT_SSL_ROOTS_FILE_PATH_ENV_VAR);
+@@ -966,6 +978,7 @@ static grpc_slice compute_default_pem_root_certs_once(void) {
+     GRPC_LOG_IF_ERROR("load_file",
+                       grpc_load_file(installed_roots_path, 1, &result));
+   }
++#endif
+   return result;
+ }
+ 
+diff --git a/src/core/lib/support/subprocess_windows.cc b/src/core/lib/support/subprocess_windows.cc
+index dcdafb5..1225eff 100644
+--- a/src/core/lib/support/subprocess_windows.cc
++++ b/src/core/lib/support/subprocess_windows.cc
+@@ -111,6 +111,9 @@ getExitCode:
+ }
+ 
+ void gpr_subprocess_interrupt(gpr_subprocess* p) {
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
++  return;
++#else
+   DWORD dwExitCode;
+   if (GetExitCodeProcess(p->pi.hProcess, &dwExitCode)) {
+     if (dwExitCode == STILL_ACTIVE) {
+@@ -121,6 +124,7 @@ void gpr_subprocess_interrupt(gpr_subprocess* p) {
+     }
+   }
+   return;
++#endif
+ }
+ 
+ #endif /* GPR_WINDOWS_SUBPROCESS */
