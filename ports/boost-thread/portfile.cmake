@@ -5,17 +5,12 @@ include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO boostorg/thread
-    REF boost-1.67.0
-    SHA512 e641484c2d021d0a8b77955bd9ee7f53f4a4c7f003b9260aa17c78b236a8cda4b1ec59c9fb16aab823b7be9d6da6a67c2d333308d8b1d5c9bbaa6a0de9018479
+    REF boost-1.65.0
+    SHA512 8599482275697a32f0e8afcac7fb6e064e4e12d12fc2876a824dd9457b07c7a80e173142d26f141622c21601711335876c102439190b072ff9dda082bfdccb8c
     HEAD_REF master
 )
 
 include(${CURRENT_INSTALLED_DIR}/share/boost-build/boost-modular-build.cmake)
-boost_modular_build(
-    SOURCE_PATH ${SOURCE_PATH}
-    REQUIREMENTS "<library>/boost/date_time//boost_date_time"
-    OPTIONS /boost/thread//boost_thread
-    BOOST_CMAKE_FRAGMENT ${CMAKE_CURRENT_LIST_DIR}/b2-options.cmake
-)
+boost_modular_build(SOURCE_PATH ${SOURCE_PATH} REQUIREMENTS "<library>/boost/date_time//boost_date_time" OPTIONS /boost/thread//boost_thread)
 include(${CURRENT_INSTALLED_DIR}/share/boost-vcpkg-helpers/boost-modular-headers.cmake)
 boost_modular_headers(SOURCE_PATH ${SOURCE_PATH})

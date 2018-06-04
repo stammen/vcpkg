@@ -5,8 +5,8 @@ include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO boostorg/timer
-    REF boost-1.67.0
-    SHA512 6028432edbdee4318d3295c9834417d31816efd8e16c5a0bcc41c0b1ffdd422c31eadb01cb0934684421bb07079476ecae41ec64d314c60d19d02ed9d995c682
+    REF boost-1.65.0
+    SHA512 eddebaaec57f2eda13634cb7b205252110a178a2a7986125520eb184336c2bcaf6324b7fe5a3c2b711582b96af4936367a8910b4cbbb095226edc02cc0f4c381
     HEAD_REF master
 )
 

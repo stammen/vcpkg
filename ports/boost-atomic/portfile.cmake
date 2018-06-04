@@ -5,8 +5,8 @@ include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO boostorg/atomic
-    REF boost-1.67.0
-    SHA512 4a4ab037e17c6c2a5a1ae5acb880392f863daa4cc87ca22349d9da565b229d68ce1befe96d7457778dddd40afb95266d6cb45552a46d9679f7bc935e8fb16b85
+    REF boost-1.65.0
+    SHA512 90ddbd1026f32af59060634ec4f6fbb214e3ee1e0c8b2117a637e6523c575c3413e96c2163d440d6e6f923ca66592296e187e159226d99df418ca613d9597914
     HEAD_REF master
 )
 

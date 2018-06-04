@@ -5,10 +5,9 @@ include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO boostorg/filesystem
-    REF boost-1.67.0
-    SHA512 a81dbf5dcf1b7bde572b02276ee25f78c5673d64aee8b5f864e6b2e04f29cdbf8ecd469b1f039bcda3b490372d3387121a896bf7faf30f767f63c107a1cf581d
+    REF boost-1.65.0
+    SHA512 4e95369101b6638380d38a58d5868edf3dcbfd1fac4d3c3fbb466186d2d83f5a4fcd6eb2875d1167d5c6c324ad7ef523e30ebd26d1718441cb451d0d46dfbff4
     HEAD_REF master
-    PATCHES "${CMAKE_CURRENT_LIST_DIR}/fix-uwp.patch"
 )
 
 include(${CURRENT_INSTALLED_DIR}/share/boost-build/boost-modular-build.cmake)

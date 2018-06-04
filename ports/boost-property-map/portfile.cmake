@@ -5,8 +5,8 @@ include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO boostorg/property_map
-    REF boost-1.67.0
-    SHA512 07360357577815c6545473d3b5ac64e6851031cc926bcc72419e0bbc49b291477a1e15663e79916044f2e8b946dee397dc1aede7eb2286d506fd86c87e81db48
+    REF boost-1.65.0
+    SHA512 893735b3ce1e033e7dcd8b72f0cf45433277d21b0942025a360017a1eea8f44a4865d29eee00f01796947cca19fc2ac3001c31e7c6b6d9671ad9d0c1926aa7f3
     HEAD_REF master
 )
 
