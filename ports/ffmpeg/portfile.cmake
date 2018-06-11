@@ -89,6 +89,7 @@ else()
     set(OPTIONS "${OPTIONS} --disable-lzma")
 endif()
 
+
 # bzip2's debug library is named "bz2d", which isn't found by ffmpeg
 # if("bzip2" IN_LIST FEATURES)
 #     set(OPTIONS "${OPTIONS} --enable-bzip2")
@@ -97,6 +98,9 @@ endif()
 # endif()
 
 if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+	set(OPTIONS "${OPTIONS} --enable-thumb")
+	set(OPTIONS "${OPTIONS} --cpu=armv7")
+
     set(ENV{LIBPATH} "$ENV{LIBPATH};$ENV{_WKITS10}references\\windows.foundation.foundationcontract\\2.0.0.0\\;$ENV{_WKITS10}references\\windows.foundation.universalapicontract\\3.0.0.0\\")
     set(OPTIONS "${OPTIONS} --disable-programs --enable-cross-compile --target-os=win32 --arch=${VCPKG_TARGET_ARCHITECTURE}")
     set(OPTIONS "${OPTIONS} --extra-cflags=-DWINAPI_FAMILY=WINAPI_FAMILY_APP --extra-cflags=-D_WIN32_WINNT=0x0A00")
