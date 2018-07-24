@@ -37,6 +37,7 @@ set(_csc_PROJECT_PATH ffmpeg)
 file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
 
 set(OPTIONS "--enable-asm --enable-yasm --disable-doc --enable-debug --disable-ffmpeg")
+set(OPTIONS "${OPTIONS} --disable-decoder=h263 --disable-decoder=hevc --disable-decoder=vc1 --disable-decoder=h264 --disable-decoder=mpeg2video --disable-decoder=vp9")
 set(OPTIONS "${OPTIONS} --enable-runtime-cpudetect")
 
 if("nonfree" IN_LIST FEATURES)
