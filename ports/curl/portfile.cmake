@@ -22,7 +22,7 @@ string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" CURL_STATICLIB)
 set(HTTP2_OPTIONS)
 if("http2" IN_LIST FEATURES)
     if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
-        message(FATAL_ERROR "The http2 feature cannot be enabled when building for UWP.")
+        #message(FATAL_ERROR "The http2 feature cannot be enabled when building for UWP.")
     endif()
 
     set(HTTP2_OPTIONS -DUSE_NGHTTP2=ON)
