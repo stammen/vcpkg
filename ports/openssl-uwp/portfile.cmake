@@ -35,11 +35,6 @@ vcpkg_download_distfile(ARCHIVE
 
 vcpkg_extract_source_archive(${ARCHIVE})
 
-vcpkg_apply_patches(
-    SOURCE_PATH ${SOURCE_PATH}
-    PATCHES ${CMAKE_CURRENT_LIST_DIR}/fix-uwp-rs4.patch
-)
-
 file(REMOVE_RECURSE ${SOURCE_PATH}/tmp32dll)
 file(REMOVE_RECURSE ${SOURCE_PATH}/out32dll)
 file(REMOVE_RECURSE ${SOURCE_PATH}/inc32dll)
@@ -63,15 +58,13 @@ file(
 )
 
 file(INSTALL
-    ${SOURCE_PATH}/vsout/package/lib/Universal/10.0/Static/Unicode/Release/${UWP_PLATFORM}/libeay32.lib
-    ${SOURCE_PATH}/vsout/package/lib/Universal/10.0/Static/Unicode/Release/${UWP_PLATFORM}/ssleay32.lib
+    ${SOURCE_PATH}/vsout/NT-Universal-10.0-Static-Unicode/Release/${UWP_PLATFORM}/bin/libeay32.lib
+	${SOURCE_PATH}/vsout/NT-Universal-10.0-Static-Unicode/Release/${UWP_PLATFORM}/bin/ssleay32.lib
     DESTINATION ${CURRENT_PACKAGES_DIR}/lib)
 
-
-
 file(INSTALL
-    ${SOURCE_PATH}/vsout/package/lib/Universal/10.0/Static/Unicode/Debug/${UWP_PLATFORM}/libeay32.lib
-    ${SOURCE_PATH}/vsout/package/lib/Universal/10.0/Static/Unicode/Debug/${UWP_PLATFORM}/ssleay32.lib
+	${SOURCE_PATH}/vsout/NT-Universal-10.0-Static-Unicode/Debug/${UWP_PLATFORM}/bin/libeay32.lib
+	${SOURCE_PATH}/vsout/NT-Universal-10.0-Static-Unicode/Debug/${UWP_PLATFORM}/bin/ssleay32.lib
     DESTINATION ${CURRENT_PACKAGES_DIR}/debug/lib)
 
 
