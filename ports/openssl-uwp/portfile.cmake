@@ -19,7 +19,7 @@ endif()
 
 include(vcpkg_common_functions)
 
-set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/openssl-OpenSSL_1_0_2l_WinRT)
+set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/openssl-OpenSSL_1_0_2_WinRT-stable)
 
 vcpkg_find_acquire_program(PERL)
 vcpkg_find_acquire_program(JOM)
@@ -28,9 +28,9 @@ get_filename_component(PERL_EXE_PATH ${PERL} DIRECTORY)
 set(ENV{PATH} "$ENV{PATH};${PERL_EXE_PATH};${JOM_EXE_PATH}")
 
 vcpkg_download_distfile(ARCHIVE
-    URLS "https://github.com/Microsoft/openssl/archive/OpenSSL_1_0_2l_WinRT.zip"
-    FILENAME "openssl-microsoft-1.0.2l_WinRT.zip"
-    SHA512 238b3daad7f1a2486e09d47e6d1bd4b0aa8e8a896358c6dfe11a77c2654da1b29d3c7612f9d200d5be5a020f33d96fe39cd75b99aa35aa4129feb756f7f98ee8
+    URLS "https://github.com/Microsoft/openssl/archive/OpenSSL_1_0_2_WinRT-stable.zip"
+    FILENAME "OpenSSL_1_0_2_WinRT-stable.zip"
+    SHA512 76b9113010687265d62fee513ad15f1782e982e80f234692ef4720521e54a2ef6d217f1a0d77457a9587a0923e501ae298020a4a63a9f2a2fdda6b18cda74fbd
 )
 
 vcpkg_extract_source_archive(${ARCHIVE})
@@ -63,28 +63,17 @@ file(
 )
 
 file(INSTALL
-    ${SOURCE_PATH}/out32dll/libeay32.dll
-    ${SOURCE_PATH}/out32dll/libeay32.pdb
-    ${SOURCE_PATH}/out32dll/ssleay32.dll
-    ${SOURCE_PATH}/out32dll/ssleay32.pdb
-    DESTINATION ${CURRENT_PACKAGES_DIR}/bin)
-
-file(INSTALL
-    ${SOURCE_PATH}/out32dll/libeay32.lib
-    ${SOURCE_PATH}/out32dll/ssleay32.lib
+    ${SOURCE_PATH}/vsout/package/lib/Universal/10.0/Static/Unicode/Release/${UWP_PLATFORM}/libeay32.lib
+    ${SOURCE_PATH}/vsout/package/lib/Universal/10.0/Static/Unicode/Release/${UWP_PLATFORM}/ssleay32.lib
     DESTINATION ${CURRENT_PACKAGES_DIR}/lib)
 
-file(INSTALL
-    ${SOURCE_PATH}/out32dll/libeay32.dll
-    ${SOURCE_PATH}/out32dll/libeay32.pdb
-    ${SOURCE_PATH}/out32dll/ssleay32.dll
-    ${SOURCE_PATH}/out32dll/ssleay32.pdb
-    DESTINATION ${CURRENT_PACKAGES_DIR}/debug/bin)
+
 
 file(INSTALL
-    ${SOURCE_PATH}/out32dll/libeay32.lib
-    ${SOURCE_PATH}/out32dll/ssleay32.lib
+    ${SOURCE_PATH}/vsout/package/lib/Universal/10.0/Static/Unicode/Debug/${UWP_PLATFORM}/libeay32.lib
+    ${SOURCE_PATH}/vsout/package/lib/Universal/10.0/Static/Unicode/Debug/${UWP_PLATFORM}/ssleay32.lib
     DESTINATION ${CURRENT_PACKAGES_DIR}/debug/lib)
+
 
 file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/usage DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
