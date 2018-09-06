@@ -26,8 +26,6 @@ vcpkg_configure_cmake(
         -DSKIP_INSTALL_HEADERS=ON
 )
 
-set(VCPKG_LIBRARY_LINKAGE static)
-
 vcpkg_install_cmake()
 
 # Both dynamic and static are built, so keep only the one needed
