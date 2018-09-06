@@ -26,6 +26,8 @@ vcpkg_configure_cmake(
         -DSKIP_INSTALL_HEADERS=ON
 )
 
+set(VCPKG_LIBRARY_LINKAGE static)
+
 vcpkg_install_cmake()
 
 # Both dynamic and static are built, so keep only the one needed
@@ -44,4 +46,8 @@ vcpkg_copy_pdbs()
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/usage DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
 
+if(VCPKG_LIBRARY_LINKAGE STREQUAL static)
+    file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
+endif()
+    
 vcpkg_test_cmake(PACKAGE_NAME ZLIB MODULE)
