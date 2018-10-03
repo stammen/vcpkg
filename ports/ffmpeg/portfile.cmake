@@ -37,6 +37,7 @@ set(_csc_PROJECT_PATH ffmpeg)
 file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
 
 set(OPTIONS "--enable-asm --enable-yasm --disable-doc --enable-debug --disable-ffmpeg")
+set(OPTIONS "${OPTIONS} --disable-decoder=h263 --disable-decoder=hevc --disable-decoder=vc1 --disable-decoder=h264 --disable-decoder=mpeg2video --disable-decoder=vp9")
 set(OPTIONS "${OPTIONS} --enable-runtime-cpudetect")
 
 if("nonfree" IN_LIST FEATURES)
@@ -100,7 +101,8 @@ if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
     set(ENV{LIBPATH} "$ENV{LIBPATH};$ENV{_WKITS10}references\\windows.foundation.foundationcontract\\2.0.0.0\\;$ENV{_WKITS10}references\\windows.foundation.universalapicontract\\3.0.0.0\\")
     set(OPTIONS "${OPTIONS} --disable-programs --enable-cross-compile --target-os=win32 --arch=${VCPKG_TARGET_ARCHITECTURE}")
     set(OPTIONS "${OPTIONS} --extra-cflags=-DWINAPI_FAMILY=WINAPI_FAMILY_APP --extra-cflags=-D_WIN32_WINNT=0x0A00")
-
+	set(OPTIONS "${OPTIONS} --disable-encoders --disable-decoders --disable-filters")
+	
     if (VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
         vcpkg_find_acquire_program(GASPREPROCESSOR)
         foreach(GAS_PATH ${GASPREPROCESSOR})
