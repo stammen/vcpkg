@@ -19,7 +19,7 @@ endif()
 
 include(vcpkg_common_functions)
 
-set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/openssl-OpenSSL_1_0_2_WinRT-stable)
+set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/openssl-OpenSSL_1_0_2q_WinRT)
 
 vcpkg_find_acquire_program(PERL)
 vcpkg_find_acquire_program(JOM)
@@ -28,9 +28,10 @@ get_filename_component(PERL_EXE_PATH ${PERL} DIRECTORY)
 set(ENV{PATH} "$ENV{PATH};${PERL_EXE_PATH};${JOM_EXE_PATH}")
 
 vcpkg_download_distfile(ARCHIVE
-    URLS "https://github.com/Microsoft/openssl/archive/OpenSSL_1_0_2_WinRT-stable.zip"
-    FILENAME "OpenSSL_1_0_2_WinRT-stable.zip"
-    SHA512 e0a4abfd8b1dc7c2e84621f87c5ff6a5a803edb3af1c90e671a0350853b92de4d190f46d539392326f640b10ec59e355e650e18ad2440fe4d9a0386d8239783d
+
+    URLS "https://github.com/Microsoft/openssl/archive/OpenSSL_1_0_2q_WinRT.zip"
+    FILENAME "openssl-microsoft-1.0.2q_WinRT.zip"
+    SHA512 828ddeb10b7d04155df64cb38f3d8b8109ff01494fed7f6c1063673e45414c1c309379e8bbe72478bd0fbae649d6749877c20b1b4a91db136a0853745f4da6b6
 )
 
 vcpkg_extract_source_archive(${ARCHIVE})
