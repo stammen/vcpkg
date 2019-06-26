@@ -10,8 +10,8 @@ vcpkg_from_github(
     REF 4233fef583b4f8cbf9f781311717600feaaa0694
     SHA512 6eb239f16e0ecacb825264869aafad7fb39aa1b1f8a3c03c92344c4255d1c1a34ca0a47a366c471fd2da808f3be14262c7e2305294677f2f490c1a48f6f76ec3
     HEAD_REF tbb_2019
+	PATCHES arm64.patch
 )
-
 
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt DESTINATION ${SOURCE_PATH})
@@ -41,7 +41,6 @@ else()
         PROJECT_SUBPATH build/vs2013/makefile.sln
         RELEASE_CONFIGURATION ${RELEASE_CONFIGURATION}
         DEBUG_CONFIGURATION ${DEBUG_CONFIGURATION}
-        PATCHES arm64.patch
     )
     # Settings for TBBConfigInternal.cmake.in
     set(TBB_LIB_EXT lib)
