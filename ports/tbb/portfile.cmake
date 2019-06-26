@@ -41,6 +41,7 @@ else()
         PROJECT_SUBPATH build/vs2013/makefile.sln
         RELEASE_CONFIGURATION ${RELEASE_CONFIGURATION}
         DEBUG_CONFIGURATION ${DEBUG_CONFIGURATION}
+        PATCHES arm64.patch
     )
     # Settings for TBBConfigInternal.cmake.in
     set(TBB_LIB_EXT lib)
